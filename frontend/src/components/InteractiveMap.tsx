@@ -26,14 +26,19 @@ const threatNodes: ThreatNode[] = [
 
 interface InteractiveMapProps {
   onSelectRegion: (regionName: string) => void;
+  activeRegion?: string;
 }
 
-export default function InteractiveMap({ onSelectRegion }: InteractiveMapProps) {
-  const [selectedNode, setSelectedNode] = useState<ThreatNode | null>(null);
+export default function InteractiveMap({ onSelectRegion, activeRegion }: InteractiveMapProps) {
+  const [localSelectedNode, setLocalSelectedNode] = useState<ThreatNode | null>(null);
   const [hoveredNode, setHoveredNode] = useState<ThreatNode | null>(null);
 
+  const selectedNode = activeRegion 
+    ? (threatNodes.find(n => n.name === activeRegion) || localSelectedNode) 
+    : localSelectedNode;
+
   const handleNodeClick = (node: ThreatNode) => {
-    setSelectedNode(node);
+    setLocalSelectedNode(node);
     onSelectRegion(node.name);
   };
 
