@@ -1,0 +1,131 @@
+@import "tailwindcss";
+
+@theme {
+  --color-neon-blue: #00D1FF;
+  --color-neon-purple: #7B2FF7;
+  --color-neon-red: #FF4D4D;
+  --color-neon-cyan: #00F5FF;
+  --color-dark-bg: #030712;
+  --color-dark-card: rgba(10, 15, 30, 0.65);
+  --color-cyber-border: rgba(0, 209, 255, 0.2);
+  
+  --shadow-glow-blue: 0 0 12px rgba(0, 209, 255, 0.4), 0 0 24px rgba(0, 209, 255, 0.15);
+  --shadow-glow-purple: 0 0 12px rgba(123, 47, 247, 0.4), 0 0 24px rgba(123, 47, 247, 0.15);
+  --shadow-glow-red: 0 0 12px rgba(255, 77, 77, 0.5), 0 0 24px rgba(255, 77, 77, 0.2);
+  --shadow-glow-cyan: 0 0 12px rgba(0, 245, 255, 0.4), 0 0 24px rgba(0, 245, 255, 0.15);
+  
+  --animate-scan: scan 6s linear infinite;
+  --animate-radar: radar-sweep 5s linear infinite;
+  --animate-grid-move: grid-move 20s linear infinite;
+  --animate-glow-border: border-glow 3s ease-in-out infinite alternate;
+  
+  @keyframes scan {
+    0% { transform: translateY(-100%); }
+    100% { transform: translateY(100%); }
+  }
+  @keyframes radar-sweep {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  @keyframes grid-move {
+    0% { background-position: 0 0; }
+    100% { background-position: 40px 40px; }
+  }
+  @keyframes border-glow {
+    0% { border-color: rgba(0, 209, 255, 0.25); box-shadow: 0 0 5px rgba(0, 209, 255, 0.1); }
+    100% { border-color: rgba(123, 47, 247, 0.6); box-shadow: 0 0 15px rgba(123, 47, 247, 0.3); }
+  }
+}
+
+:root {
+  --background: #030712;
+  --foreground: #f3f4f6;
+  color-scheme: dark;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: 'Outfit', 'Inter', system-ui, sans-serif;
+  overflow-x: hidden;
+}
+
+/* Glassmorphism custom components */
+.glass-panel {
+  background: rgba(10, 15, 30, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+.glass-panel-glow {
+  background: rgba(10, 15, 30, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(0, 209, 255, 0.2);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5), 0 0 15px rgba(0, 209, 255, 0.1);
+}
+
+.glass-card {
+  background: rgba(17, 24, 39, 0.45);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-card:hover {
+  border-color: rgba(0, 209, 255, 0.3);
+  background: rgba(17, 24, 39, 0.6);
+  box-shadow: 0 0 20px rgba(0, 209, 255, 0.1);
+}
+
+/* Cyberpunk decorative elements */
+.cyber-grid {
+  background-size: 40px 40px;
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+}
+
+.neon-text-blue {
+  text-shadow: 0 0 8px rgba(0, 209, 255, 0.6);
+}
+
+.neon-text-purple {
+  text-shadow: 0 0 8px rgba(123, 47, 247, 0.6);
+}
+
+.neon-text-red {
+  text-shadow: 0 0 8px rgba(255, 77, 77, 0.6);
+}
+
+/* Scrollbar Customization */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(3, 7, 18, 0.9);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(123, 47, 247, 0.3);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 209, 255, 0.5);
+}
+
+/* Blinking animations */
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.4; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.15); }
+}
+
+.active-pulse {
+  animation: pulse-glow 2s infinite;
+}
