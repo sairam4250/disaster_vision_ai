@@ -53,7 +53,6 @@ interface AlertFeedItem {
   active: number;
 }
 
-// Indian States and UTs
 const indianStatesAndUTs = [
   "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", 
   "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jammu & Kashmir", 
@@ -65,7 +64,6 @@ const indianStatesAndUTs = [
   "Lakshadweep", "Dadra and Nagar Haveli and Daman and Diu"
 ];
 
-// Mapping from State -> Meteorological Regional Station
 const stateToRegionMap: Record<string, string> = {
   "uttarakhand": "Himalayan Landslide Belt (Uttarakhand)",
   "himachal pradesh": "Himalayan Landslide Belt (Uttarakhand)",
@@ -112,7 +110,6 @@ const stateToRegionMap: Record<string, string> = {
   "dadra and nagar haveli and daman and diu": "Kachchh Seismic Fault (Bhuj, Gujarat)"
 };
 
-// Mapping from Meteorological Regional Station -> Primary State
 const regionToPrimaryStateMap: Record<string, string> = {
   "Himalayan Landslide Belt (Uttarakhand)": "Uttarakhand",
   "Brahmaputra Basin (Assam)": "Assam",
@@ -124,22 +121,19 @@ const regionToPrimaryStateMap: Record<string, string> = {
 export default function DashboardPage() {
   const { setParticleMode } = useWeather();
   
-  // States
   const [selectedRegion, setSelectedRegion] = useState("Bay of Bengal (Odisha Coast)");
   const [selectedState, setSelectedState] = useState("Odisha");
   const [weather, setWeather] = useState<WeatherData | null>(null);
   const [alerts, setAlerts] = useState<AlertFeedItem[]>([]);
   const [loading, setLoading] = useState(true);
   
-  // Search state
   const [searchQuery, setSearchQuery] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false);
   const searchContainerRef = useRef<HTMLDivElement | null>(null);
 
-  // View Mode: 'citizen' (simple) vs 'expert' (scientific)
   const [viewMode, setViewMode] = useState<"citizen" | "expert">("citizen");
 
-  // Handle outside click for suggestions dropdown
+  // Handle outside click for search suggestions
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (searchContainerRef.current && !searchContainerRef.current.contains(event.target as Node)) {
@@ -148,6 +142,22 @@ export default function DashboardPage() {
     }
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // Sync with search queries from Homepage router redirection
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const urlState = params.get("state");
+      if (urlState) {
+        const matchedState = indianStatesAndUTs.find(
+          (s) => s.toLowerCase() === urlState.toLowerCase()
+        );
+        if (matchedState) {
+          handleSelectState(matchedState);
+        }
+      }
+    }
   }, []);
 
   // Fetch weather for selected region
@@ -160,7 +170,6 @@ export default function DashboardPage() {
           const data = await res.json();
           setWeather(data);
           
-          // Dynamically adjust ambient particle system based on meteorological stats
           if (data.wind_speed > 100) {
             setParticleMode("storm");
           } else if (data.temperature > 35 && data.humidity < 25) {
@@ -174,8 +183,8 @@ export default function DashboardPage() {
           }
         }
       } catch (err) {
-        console.warn("Backend API not reachable. Loading mock weather fallback.", err);
-        // Fallback mock weather patterns for India adaptation regions
+        console.warn("Backend API offline. Ingesting local simulation datasets.", err);
+        
         let mockData: WeatherData = {
           region: selectedRegion,
           temperature: 28.5,
@@ -280,7 +289,7 @@ export default function DashboardPage() {
           setAlerts(data);
         }
       } catch (err) {
-        console.warn("Backend API not reachable. Loading mock alerts fallback.", err);
+        console.warn("Backend API offline. Fetching mock safety alerts.", err);
         const mockAlerts: AlertFeedItem[] = [
           { id: 1, type: "Cyclone", severity: "Critical", region: "Odisha Coast / Bay of Bengal", message: "Cyclone 'Amphan II' forming. Sustained wind speeds exceeding 210 km/h. Evacuate low-lying areas.", timestamp: new Date().toISOString(), active: 1 },
           { id: 2, type: "Wildfire", severity: "High", region: "Western Ghats, Maharashtra", message: "Forest fire spreading rapidly due to 43°C heat and dried forest cover. Containment at 5%.", timestamp: new Date().toISOString(), active: 1 },
@@ -292,7 +301,6 @@ export default function DashboardPage() {
     fetchAlerts();
   }, []);
 
-  // Handle map selection sync
   const handleMapSelectRegion = (regionName: string) => {
     setSelectedRegion(regionName);
     const mappedState = regionToPrimaryStateMap[regionName] || "Odisha";
@@ -300,7 +308,6 @@ export default function DashboardPage() {
     setSearchQuery("");
   };
 
-  // State Search selection handler
   const handleSelectState = (state: string) => {
     setSelectedState(state);
     const matchedRegion = stateToRegionMap[state.toLowerCase()] || "Bay of Bengal (Odisha Coast)";
@@ -309,105 +316,103 @@ export default function DashboardPage() {
     setShowSuggestions(false);
   };
 
-  // Filter states based on search query
   const filteredStates = searchQuery
     ? indianStatesAndUTs.filter(s => s.toLowerCase().includes(searchQuery.toLowerCase()))
     : indianStatesAndUTs;
 
-  // Derive simple citizen instructions
   const getCitizenStatus = (w: WeatherData) => {
     if (w.wind_speed > 100) {
       return {
-        label: "Cyclone Storm Threat (Critical)",
-        severity: "Critical",
+        label: "Cyclone Danger (High Risk) 🚨",
+        severity: "Danger",
         iconColor: "text-neon-red",
-        bgColor: "border-neon-red/40 bg-red-950/20 shadow-[0_0_15px_rgba(255,77,77,0.15)]",
-        badge: "bg-neon-red/10 border-neon-red/50 text-neon-red",
-        simpleDesc: "A severe cyclonic storm warning is active. Coastal gale winds can cause damage to structures.",
+        bgColor: "border-neon-red/40 bg-red-950/20 shadow-glow-red",
+        badge: "bg-neon-red/20 border-neon-red text-neon-red",
+        simpleDesc: "Gale winds exceeding 200 km/h detected. Coastal areas are at risk of storm surges.",
         steps: [
-          "Evacuate coastal or low-lying houses to strong structures or shelter camps immediately.",
-          "Stay indoors, close all windows, and keep away from loose trees or electrical posts.",
-          "Ensure emergency devices (power banks, phones) are fully charged.",
-          "Keep clean drinking water and non-perishable food stocked."
+          "Move to strong concrete buildings or government shelter camps immediately.",
+          "Keep away from windows, glass sheets, loose trees, or power cables.",
+          "Charge your mobile phones, lanterns, and power banks right now.",
+          "Keep drinking water, essential medicines, and dry foods packed."
         ]
       };
     }
     if (w.rainfall > 150) {
       return {
-        label: "Severe Flood Warning (High)",
-        severity: "High",
-        iconColor: "text-orange-500",
-        bgColor: "border-orange-500/40 bg-orange-950/20 shadow-[0_0_15px_rgba(249,115,22,0.15)]",
-        badge: "bg-orange-500/10 border-orange-500/50 text-orange-400",
-        simpleDesc: "Dangerous water levels. Heavy rain is causing local rivers and drains to overflow.",
+        label: "Severe Flooding Alert 🚨",
+        severity: "Danger",
+        iconColor: "text-neon-red",
+        bgColor: "border-neon-red/40 bg-red-950/20 shadow-glow-red",
+        badge: "bg-neon-red/20 border-neon-red text-neon-red",
+        simpleDesc: "Extremely heavy rainfall causing local rivers and storm channels to overflow.",
         steps: [
-          "Do not attempt to walk, swim, or drive through flooded roads or underpasses.",
-          "Move valuable assets and family members to higher floors or high ground.",
-          "Avoid contacting electric connections or sockets that might be wet.",
-          "Watch out for open manholes and sewage flow directions."
+          "Do not walk or drive through flooded waters. Just 6 inches of water can sweep you away.",
+          "Move valuable belongings and family members to upper floors or high ground.",
+          "Switch off your home's main electricity switch if water enters the building.",
+          "Keep emergency emergency numbers saved on paper in case network drops."
         ]
       };
     }
     if (w.temperature > 40 && w.humidity < 20) {
       return {
-        label: "Extreme Heat & Wildfire Advisory (High)",
-        severity: "High",
+        label: "Extreme Heat & Forest Fire Warning ⚠️",
+        severity: "Warning",
         iconColor: "text-orange-400",
         bgColor: "border-orange-400/40 bg-amber-950/20 shadow-[0_0_15px_rgba(245,158,11,0.15)]",
-        badge: "bg-amber-500/10 border-amber-500/50 text-amber-400",
-        simpleDesc: "Extremely dry atmosphere. Wildfires are spreading on dry grass slopes. Avoid direct heat.",
+        badge: "bg-orange-500/20 border-orange-500 text-orange-400",
+        simpleDesc: "Very high temperatures and dry air. High risk of dehydration and wild grass fires.",
         steps: [
-          "Avoid direct sun exposure between 11:00 AM and 4:00 PM.",
-          "Stay well-hydrated by drinking water or homemade ORS drinks.",
-          "Avoid lit fires, disposal of matches, or trash burning in dry open vegetation areas.",
-          "Keep livestock and pets in shaded spots with plenty of cool water."
+          "Avoid direct sun exposure, especially between 11:00 AM and 4:00 PM.",
+          "Drink plenty of water and ORS, even if you do not feel thirsty.",
+          "Keep pets in the shade and ensure they have cool drinking water.",
+          "Do not burn garbage or dry leaves near forests or dry bushes."
         ]
       };
     }
     if (w.rainfall > 80 && w.region.includes("Uttarakhand")) {
       return {
-        label: "Mountain Landslide Risk (Moderate)",
-        severity: "Moderate",
+        label: "Mountain Landslide Warning ⚠️",
+        severity: "Warning",
         iconColor: "text-yellow-500",
-        bgColor: "border-yellow-500/40 bg-yellow-950/20 shadow-[0_0_15px_rgba(234,179,8,0.15)]",
-        badge: "bg-yellow-500/10 border-yellow-500/50 text-yellow-400",
-        simpleDesc: "Soil is saturated on slopes. Rocks and soil blocks may tumble down hill sections.",
+        bgColor: "border-yellow-500/45 bg-yellow-950/25 shadow-[0_0_15px_rgba(234,179,8,0.15)]",
+        badge: "bg-yellow-500/20 border-yellow-500 text-yellow-400",
+        simpleDesc: "Heavy rains have made hill slopes loose. Rockfalls may occur along highways.",
         steps: [
-          "Postpone highway travel in mountainous segments until rainfall subsides.",
-          "Watch for sudden mud flows, tree tilts, or trickling pebbles on cliffs.",
-          "Stay clear of river channels where sudden blockages or flash floods can occur.",
-          "Cooperate with local disaster management road block warnings."
+          "Avoid traveling on mountain roads during rainfall. Postpone hill trips.",
+          "Watch out for sudden water surges in small streams or falling pebbles on slopes.",
+          "Stay clear of steep slopes or muddy hill faces.",
+          "Listen to local traffic police and disaster safety checkposts."
         ]
       };
     }
     if (w.seismic_activity > 5.0) {
       return {
-        label: "Earthquake Tremor Warning (Moderate)",
-        severity: "Moderate",
+        label: "Earthquake Tremor Caution ⚠️",
+        severity: "Warning",
         iconColor: "text-yellow-500",
-        bgColor: "border-yellow-500/40 bg-yellow-950/20 shadow-[0_0_15px_rgba(234,179,8,0.15)]",
-        badge: "bg-yellow-500/10 border-yellow-500/50 text-yellow-400",
-        simpleDesc: "Moderate tremors recorded along seismic zones. Watch for vibrations.",
+        bgColor: "border-yellow-500/45 bg-yellow-950/25 shadow-[0_0_15px_rgba(234,179,8,0.15)]",
+        badge: "bg-yellow-500/20 border-yellow-500 text-yellow-400",
+        simpleDesc: "Active underground tremors detected. Expect mild aftershocks.",
         steps: [
-          "Practice 'Drop, Cover, and Hold On' underneath strong tables if you feel a shake.",
-          "Run out of older concrete buildings to open areas away from overhead poles.",
-          "Expect minor aftershocks. Stay calm and stay away from weak structures.",
-          "Avoid elevator usage during or immediately after ground vibrations."
+          "If shaking starts, Drop, Cover, and Hold on under a strong wooden table.",
+          "If outdoors, move to open fields away from buildings, poles, and flyovers.",
+          "Do not use elevators during tremors or immediately after.",
+          "Keep a flashlight and shoes near your bed in case of night evacuations."
         ]
       };
     }
     return {
-      label: "Safe & Calm Conditions",
-      severity: "Low",
+      label: "Safe & Calm Conditions ✅",
+      severity: "Safe",
       iconColor: "text-green-400",
-      bgColor: "border-green-500/20 bg-green-950/10 shadow-[0_0_15px_rgba(34,197,94,0.05)]",
-      badge: "bg-green-500/10 border-green-500/50 text-green-400",
-      simpleDesc: "No active natural threat warnings. The weather parameters are regular.",
+      bgColor: "border-green-500/25 bg-green-950/10 shadow-[0_0_15px_rgba(34,197,94,0.05)]",
+      badge: "bg-green-500/20 border-green-500 text-green-400",
+      simpleDesc: "No natural disasters or dangerous weather systems detected in this region.",
       steps: [
-        "Conditions are safe for travel and outdoor work.",
-        "Normal daily routines can be pursued without precautions.",
-        "Stay hydrated during hot periods.",
-        "System alerts are automated and update in real-time."
+        "Local weather indicators are normal and safe.",
+        "Daily outdoor work and travel can proceed as planned.",
+        "Always check local alerts before traveling across states.",
+        "Emergency systems are scanning in the background."
       ]
     };
   };
@@ -423,85 +428,91 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 font-sans">
       
-      {/* Premium Dashboard Navigation Banner */}
+      {/* Dashboard Top Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-cyber-border/20 pb-4">
         <div>
-          <div className="flex items-center space-x-2 text-[10px] tracking-wider text-neon-blue font-mono uppercase">
-            <Sparkles className="h-3.5 w-3.5 text-neon-cyan animate-pulse" />
-            <span>Meteorological Information System</span>
+          <div className="flex items-center space-x-2 text-xs tracking-wider text-neon-blue font-bold uppercase">
+            <Sparkles className="h-4 w-4 text-neon-cyan animate-pulse" />
+            <span>National Meteorological Advisory Grid</span>
           </div>
           <h2 className="text-3xl font-extrabold tracking-tight text-white mt-1">
-            National Threat Control <span className="bg-gradient-to-r from-neon-blue to-neon-purple bg-clip-text text-transparent font-mono">DASHBOARD</span>
+            Live Safety Alerts <span className="bg-gradient-to-r from-neon-blue to-neon-purple bg-clip-text text-transparent font-mono">& MAP</span>
           </h2>
         </div>
 
-        {/* View mode toggle switch */}
-        <div className="flex items-center space-x-1.5 rounded-xl border border-cyber-border/40 bg-black/60 p-1 font-mono text-[10px] font-bold">
+        {/* View Mode Toggle */}
+        <div className="flex items-center space-x-1 rounded-xl border border-cyber-border/40 bg-black/60 p-1 font-sans text-xs font-bold">
           <button
             onClick={() => setViewMode("citizen")}
-            className={`flex items-center space-x-1.5 rounded-lg px-3 py-1.5 transition-all duration-300 ${
+            className={`flex items-center space-x-1.5 rounded-lg px-4 py-2 transition-all duration-300 ${
               viewMode === "citizen"
                 ? "bg-gradient-to-r from-neon-blue to-neon-purple text-white shadow-glow-blue"
                 : "text-gray-400 hover:text-white"
             }`}
           >
-            <Shield className="h-3.5 w-3.5" />
+            <Shield className="h-4 w-4" />
             <span>👤 CITIZEN VIEW</span>
           </button>
           <button
             onClick={() => setViewMode("expert")}
-            className={`flex items-center space-x-1.5 rounded-lg px-3 py-1.5 transition-all duration-300 ${
+            className={`flex items-center space-x-1.5 rounded-lg px-4 py-2 transition-all duration-300 ${
               viewMode === "expert"
                 ? "bg-gradient-to-r from-neon-blue to-neon-purple text-white shadow-glow-blue"
                 : "text-gray-400 hover:text-white"
             }`}
           >
-            <Activity className="h-3.5 w-3.5" />
+            <Activity className="h-4 w-4" />
             <span>🔬 EXPERT CONSOLE</span>
           </button>
         </div>
       </div>
 
-      {/* Autocomplete Search Bar & Current Location Panel */}
+      {/* State Autocomplete Search Bar & Location Badge */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
         
         {/* Search input container */}
         <div ref={searchContainerRef} className="relative md:col-span-2">
           <div className="relative flex items-center">
-            <Search className="absolute left-4 h-4 w-4 text-neon-blue animate-pulse" />
+            <Search className="absolute left-4.5 h-4.5 w-4.5 text-neon-blue animate-pulse" />
             <input
               type="text"
-              placeholder="🔍 Search for your state or region (e.g. Uttarakhand, Odisha, Maharashtra...)"
+              placeholder="Search by state or union territory (e.g. Uttarakhand, Bihar, Assam...)"
               value={searchQuery}
               onFocus={() => setShowSuggestions(true)}
               onChange={(e) => {
                 setSearchQuery(e.target.value);
                 setShowSuggestions(true);
               }}
-              className="w-full rounded-2xl border border-cyber-border/40 bg-dark-bg/85 py-3.5 pl-12 pr-4 font-sans text-sm text-white placeholder-gray-500 shadow-glow-blue outline-none transition-all duration-300 focus:border-neon-cyan focus:ring-1 focus:ring-neon-cyan"
+              className="w-full rounded-2xl border border-cyber-border/40 bg-dark-bg/85 py-3.5 pl-12 pr-4 text-sm text-white placeholder-gray-500 shadow-glow-blue outline-none transition-all duration-300 focus:border-neon-cyan focus:ring-1 focus:ring-neon-cyan"
             />
           </div>
 
           {/* Suggestions Dropdown */}
-          {showSuggestions && filteredStates.length > 0 && (
+          {showSuggestions && (
             <div className="absolute left-0 right-0 mt-2 z-50 max-h-60 overflow-y-auto rounded-xl border border-cyber-border/60 bg-dark-bg/95 p-2 backdrop-blur-xl shadow-2xl">
-              {filteredStates.map((state) => (
-                <button
-                  key={state}
-                  onClick={() => handleSelectState(state)}
-                  className="flex w-full items-center justify-between rounded-lg px-4 py-2.5 text-left font-sans text-xs text-gray-300 hover:bg-neon-blue/15 hover:text-white transition-colors duration-200"
-                >
-                  <div className="flex items-center space-x-2">
-                    <MapPin className="h-3.5 w-3.5 text-neon-cyan" />
-                    <span>{state}</span>
-                  </div>
-                  <span className="font-mono text-[9px] text-gray-500 uppercase">
-                    {stateToRegionMap[state.toLowerCase()]?.split(" (")[0] || "General Zone"}
-                  </span>
-                </button>
-              ))}
+              {filteredStates.length > 0 ? (
+                filteredStates.map((state) => (
+                  <button
+                    key={state}
+                    onClick={() => handleSelectState(state)}
+                    className="flex w-full items-center justify-between rounded-lg px-4 py-2.5 text-left text-xs text-gray-300 hover:bg-neon-blue/15 hover:text-white transition-colors duration-200"
+                  >
+                    <div className="flex items-center space-x-2">
+                      <MapPin className="h-3.5 w-3.5 text-neon-cyan" />
+                      <span>{state}</span>
+                    </div>
+                    <span className="font-mono text-[9px] text-gray-500 uppercase">
+                      Region: {stateToRegionMap[state.toLowerCase()]?.split(" (")[0] || "General Zone"}
+                    </span>
+                  </button>
+                ))
+              ) : (
+                <div className="py-3 text-center text-xs text-gray-500">
+                  No matching state found
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -512,47 +523,52 @@ export default function DashboardPage() {
             <MapPin className="h-5 w-5 animate-bounce" />
           </div>
           <div>
-            <div className="text-[9px] font-mono text-gray-400 uppercase tracking-widest">MONITORED REGION</div>
-            <div className="text-xs font-bold text-white leading-tight">
-              {selectedState} <span className="text-[10px] font-mono text-neon-purple font-normal block">{selectedRegion}</span>
+            <div className="text-[9px] font-sans text-gray-400 uppercase tracking-wider font-bold">Selected Location</div>
+            <div className="text-sm font-bold text-white leading-tight">
+              {selectedState} <span className="text-[10px] text-neon-purple font-normal block">{selectedRegion}</span>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Main Content Sections based on viewMode */}
+      {/* Main Grid Content Area */}
       {viewMode === "citizen" ? (
         
         /* CITIZEN MODE: EASY, USER-FRIENDLY & ACTIONABLE */
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
           
-          {/* Main left block: Interactive SVG Map of India (Visual & clean) */}
+          {/* Main Left: India Interactive Map */}
           <div className="lg:col-span-2 space-y-6">
-            <InteractiveMap onSelectRegion={handleMapSelectRegion} activeRegion={selectedRegion} />
+            <div className="relative">
+              <InteractiveMap onSelectRegion={handleMapSelectRegion} activeRegion={selectedRegion} />
+              <div className="absolute top-16 left-4 pointer-events-none bg-black/60 border border-cyber-border/20 px-3 py-1.5 rounded-lg text-[10px] text-gray-300">
+                👉 <span className="text-neon-cyan font-semibold">Click nodes on the map</span> to change regions manually.
+              </div>
+            </div>
             
-            {/* Plain English Citizen Alert Feed */}
-            <div className="rounded-2xl border border-cyber-border/30 bg-dark-bg/60 p-4">
-              <div className="flex items-center space-x-2 border-b border-cyber-border/20 pb-2 mb-3">
-                <Volume2 className="h-4 w-4 text-neon-red animate-pulse" />
-                <span className="font-sans text-xs font-bold text-white uppercase tracking-wider">
-                  Important Public Safety Alerts
+            {/* Simple Alert Feed */}
+            <div className="rounded-2xl border border-cyber-border/30 bg-dark-bg/60 p-5">
+              <div className="flex items-center space-x-2 border-b border-cyber-border/20 pb-3 mb-4">
+                <Volume2 className="h-4.5 w-4.5 text-neon-red animate-pulse" />
+                <span className="text-xs font-bold text-white uppercase tracking-wider">
+                  Important Public Safety Alerts Across India
                 </span>
               </div>
-              <div className="space-y-2">
+              <div className="space-y-3">
                 {alerts.map((alert) => (
                   <div 
                     key={alert.id} 
-                    className={`flex flex-col md:flex-row items-start md:items-center justify-between gap-3 rounded-xl border p-3.5 transition-all ${getSeverityAlertBg(alert.severity)}`}
+                    className={`flex flex-col md:flex-row items-start md:items-center justify-between gap-3 rounded-xl border p-4 transition-all ${getSeverityAlertBg(alert.severity)}`}
                   >
                     <div className="flex items-start space-x-3">
-                      <div className="mt-0.5 rounded-lg bg-black/40 p-1.5">
-                        <AlertTriangle className="h-4 w-4 text-orange-400" />
+                      <div className="mt-0.5 rounded-lg bg-black/40 p-2">
+                        <AlertTriangle className="h-4.5 w-4.5 text-orange-400" />
                       </div>
                       <div>
-                        <div className="font-bold text-xs text-white uppercase tracking-wider">
-                          {alert.type} Warning - {alert.region}
+                        <div className="font-extrabold text-sm text-white uppercase tracking-wide">
+                          {alert.type} Warning — {alert.region}
                         </div>
-                        <p className="text-xs text-gray-300 mt-1 font-sans leading-relaxed">
+                        <p className="text-xs text-gray-300 mt-1 leading-relaxed">
                           {alert.message}
                         </p>
                       </div>
@@ -563,61 +579,62 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {/* Right sidebar: Citizen Safety status hub */}
+          {/* Right Sidebar: Safety Status Hub */}
           <div className="space-y-6">
             
             {/* The Citizen Safety Hub Card (Simplified description) */}
             {citizenStatus && (
               <div className={`rounded-2xl border p-5 ${citizenStatus.bgColor} transition-all duration-300`}>
-                <div className="flex items-center justify-between border-b border-white/10 pb-3 mb-4">
-                  <h3 className="font-sans text-sm font-extrabold text-white flex items-center space-x-2">
+                <div className="flex items-center justify-between border-b border-white/10 pb-3.5 mb-4">
+                  <h3 className="text-sm font-extrabold text-white flex items-center space-x-2">
                     <Shield className={`h-5 w-5 ${citizenStatus.iconColor}`} />
                     <span>Citizen Safety Hub</span>
                   </h3>
-                  <span className={`rounded-full px-3 py-1 text-[9px] font-extrabold border ${citizenStatus.badge}`}>
+                  <span className={`rounded-full px-3 py-1 text-[10px] font-extrabold border ${citizenStatus.badge}`}>
                     {citizenStatus.severity}
                   </span>
                 </div>
 
-                <div className="space-y-4">
+                <div className="space-y-5">
                   <div>
-                    <span className="text-[10px] font-mono text-gray-400 tracking-wider block uppercase">CURRENT RISK STATUS</span>
-                    <h4 className="text-lg font-extrabold text-white mt-0.5 flex items-center gap-1.5">
-                      <span>{citizenStatus.label}</span>
+                    <span className="text-[10px] font-bold text-gray-400 tracking-wider block uppercase">CURRENT RISK STATUS</span>
+                    <h4 className="text-lg font-black text-white mt-1">
+                      {citizenStatus.label}
                     </h4>
-                    <p className="text-xs text-gray-300 font-sans mt-2 leading-relaxed">
+                    <p className="text-xs text-gray-200 mt-2.5 leading-relaxed">
                       {citizenStatus.simpleDesc}
                     </p>
                   </div>
 
-                  {/* Safety actions list */}
+                  {/* Safety Actions Checklist */}
                   <div className="border-t border-white/5 pt-4 space-y-3">
-                    <span className="text-[10px] font-mono text-neon-cyan tracking-wider block uppercase">RECOMMENDED CITIZEN ACTIONS:</span>
-                    <ul className="space-y-2.5 font-sans text-xs">
+                    <span className="text-[10px] font-bold text-neon-cyan tracking-wider block uppercase">WHAT YOU SHOULD DO RIGHT NOW:</span>
+                    <ul className="space-y-3 text-xs">
                       {citizenStatus.steps.map((step, idx) => (
-                        <li key={idx} className="flex items-start space-x-2.5 text-gray-300">
-                          <CheckCircle2 className="h-4 w-4 text-green-400 flex-shrink-0 mt-0.5" />
-                          <span className="leading-relaxed">{step}</span>
+                        <li key={idx} className="flex items-start space-x-2.5 text-gray-200">
+                          <CheckCircle2 className="h-4.5 w-4.5 text-green-400 flex-shrink-0 mt-0.5" />
+                          <span className="leading-relaxed font-medium">{step}</span>
                         </li>
                       ))}
                     </ul>
                   </div>
 
-                  {/* Help links / Quick buttons */}
+                  {/* Helpline SOS Call */}
                   <div className="border-t border-white/5 pt-4 flex flex-col gap-2">
                     <Link
                       href="/emergency"
-                      className="flex items-center justify-center space-x-2 rounded-xl bg-neon-red/20 border border-neon-red/40 hover:bg-neon-red/35 px-4 py-3 text-xs font-bold text-neon-red tracking-wider shadow-glow-red transition-all duration-200 active:scale-95"
+                      className="flex items-center justify-center space-x-2 rounded-xl bg-neon-red/25 border border-neon-red/50 hover:bg-neon-red/35 px-4 py-3.5 text-xs font-bold text-neon-red tracking-wider shadow-glow-red transition-all duration-200 active:scale-95"
                     >
-                      <PhoneCall className="h-4 w-4 animate-pulse" />
+                      <PhoneCall className="h-4.5 w-4.5 animate-pulse" />
                       <span>ACTIVATE SOS EMERGENCY ASSISTANT</span>
                     </Link>
+                    
                     <Link
                       href="/prediction"
                       className="flex items-center justify-center space-x-1.5 hover:underline px-4 py-2 text-xs font-semibold text-neon-blue"
                     >
                       <span>Simulate Custom Disasters</span>
-                      <ArrowRight className="h-3.5 w-3.5" />
+                      <ArrowRight className="h-4 w-4" />
                     </Link>
                   </div>
 
@@ -625,41 +642,41 @@ export default function DashboardPage() {
               </div>
             )}
 
-            {/* Simple weather card for citizen */}
+            {/* Simple Local Weather Overview */}
             <div className="rounded-2xl border border-cyber-border/40 bg-dark-bg/60 p-4">
-              <h3 className="font-sans text-xs font-bold text-white uppercase tracking-wider border-b border-cyber-border/20 pb-2 mb-4">
+              <h3 className="text-xs font-bold text-white uppercase tracking-wider border-b border-cyber-border/20 pb-2.5 mb-4">
                 Current Local Weather
               </h3>
               {weather ? (
-                <div className="space-y-3">
+                <div className="space-y-4.5">
                   <div className="grid grid-cols-2 gap-3">
-                    <div className="rounded-xl border border-cyber-border/10 bg-white/5 p-3 flex items-center space-x-2">
-                      <Thermometer className="h-5 w-5 text-neon-red" />
+                    <div className="rounded-xl border border-cyber-border/10 bg-white/5 p-3 flex items-center space-x-2.5">
+                      <Thermometer className="h-6 w-6 text-neon-red" />
                       <div>
-                        <div className="text-[9px] text-gray-400">Temperature</div>
+                        <div className="text-[10px] text-gray-400">Temperature</div>
                         <div className="text-sm font-bold text-white">{weather.temperature}°C</div>
                       </div>
                     </div>
-                    <div className="rounded-xl border border-cyber-border/10 bg-white/5 p-3 flex items-center space-x-2">
-                      <CloudRain className="h-5 w-5 text-blue-400" />
+                    <div className="rounded-xl border border-cyber-border/10 bg-white/5 p-3 flex items-center space-x-2.5">
+                      <CloudRain className="h-6 w-6 text-blue-400" />
                       <div>
-                        <div className="text-[9px] text-gray-400">Rainfall</div>
+                        <div className="text-[10px] text-gray-400">Rainfall</div>
                         <div className="text-sm font-bold text-white">{weather.rainfall} mm</div>
                       </div>
                     </div>
                   </div>
 
-                  <div className="rounded-xl border border-cyber-border/10 bg-white/5 p-3 flex items-center space-x-3">
-                    <Wind className="h-5 w-5 text-neon-cyan" />
+                  <div className="rounded-xl border border-cyber-border/10 bg-white/5 p-3.5 flex items-center space-x-3">
+                    <Wind className="h-6 w-6 text-neon-cyan" />
                     <div className="flex-1">
-                      <div className="text-[9px] text-gray-400">Wind Status</div>
+                      <div className="text-[10px] text-gray-400">Wind Status</div>
                       <div className="text-xs font-bold text-white">{weather.wind_speed} km/h (Normal winds)</div>
                     </div>
                   </div>
                 </div>
               ) : (
-                <div className="h-20 flex items-center justify-center text-xs text-gray-500 animate-pulse font-mono">
-                  Loading weather...
+                <div className="h-20 flex items-center justify-center text-xs text-gray-500 animate-pulse">
+                  Loading weather metrics...
                 </div>
               )}
             </div>
@@ -669,7 +686,7 @@ export default function DashboardPage() {
         </div>
 
       ) : (
-
+        
         /* EXPERT MODE: ADVANCED METEOROLOGICAL TELEMETRY & SCIENTIFIC ANALYTICS */
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
           

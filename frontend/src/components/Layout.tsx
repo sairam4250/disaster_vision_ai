@@ -14,8 +14,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       {/* Background Weather Canvas */}
       <ParticleSystem mode={particleMode} />
 
-      {/* Futuristic Scan Lines effect */}
-      <div className="pointer-events-none fixed inset-0 z-10 h-full w-full bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] bg-[size:100%_4px,3px_100%]" />
+      {/* Soft Vignette effect instead of heavy CRT lines */}
+      <div className="pointer-events-none fixed inset-0 z-10 h-full w-full bg-[radial-gradient(circle_at_center,transparent_40%,rgba(3,7,18,0.4)_100%)]" />
       
       {/* Scanning bar animation */}
       <div className="pointer-events-none fixed inset-x-0 top-0 z-10 h-[2px] w-full bg-neon-blue/20 shadow-glow-blue animate-scan" />

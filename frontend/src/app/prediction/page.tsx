@@ -11,181 +11,179 @@ interface PredictionResult {
   probabilities: Record<string, number>;
 }
 
-// Initial Feature Sets for sliding parameters
 const initialFeatures = {
   flood: {
-    rainfall: 120, // mm
-    soil_moisture: 60, // %
-    elevation: 300, // meters
-    temperature: 25, // °C
-    river_level: 3.5, // meters
+    rainfall: 120, 
+    soil_moisture: 60, 
+    elevation: 300, 
+    temperature: 25, 
+    river_level: 3.5, 
   },
   earthquake: {
-    tectonic_distance: 120, // km
-    seismic_depth: 35, // km
-    magnitude_trend: 4.5, // Richter
-    historical_frequency: 12, // occurrences
-    magnetic_anomaly: 15, // nT
+    tectonic_distance: 120, 
+    seismic_depth: 35, 
+    magnitude_trend: 4.5, 
+    historical_frequency: 12, 
+    magnetic_anomaly: 15, 
   },
   cyclone: {
-    sea_temp: 27.5, // °C
-    pressure: 980, // hPa
-    wind_speed: 85, // km/h
-    humidity: 78, // %
-    thermal_energy: 45, // kJ
+    sea_temp: 27.5, 
+    pressure: 980, 
+    wind_speed: 85, 
+    humidity: 78, 
+    thermal_energy: 45, 
   },
   wildfire: {
-    temperature: 32, // °C
-    humidity: 28, // %
-    wind_speed: 35, // km/h
-    drought_index: 5.5, // 0-10 scale
-    vegetation_density: 65, // %
+    temperature: 32, 
+    humidity: 28, 
+    wind_speed: 35, 
+    drought_index: 5.5, 
+    vegetation_density: 65, 
   },
   landslide: {
-    slope_angle: 32, // degrees
-    soil_moisture: 70, // %
-    rainfall_intensity: 45, // mm/hr
-    vegetation_coverage: 40, // %
-    seismic_activity: 1.5, // ML
+    slope_angle: 32, 
+    soil_moisture: 70, 
+    rainfall_intensity: 45, 
+    vegetation_coverage: 40, 
+    seismic_activity: 1.5, 
   }
 };
 
 const featureDetails: Record<string, Record<string, { label: string; min: number; max: number; step: number; unit: string }>> = {
   flood: {
-    rainfall: { label: "Rainfall Intensity", min: 0, max: 600, step: 5, unit: "mm/day" },
-    soil_moisture: { label: "Soil Saturation", min: 10, max: 100, step: 1, unit: "%" },
-    elevation: { label: "Elevation Above Sea Level", min: 2, max: 3000, step: 10, unit: "meters" },
-    temperature: { label: "Ambient Temperature", min: 10, max: 45, step: 1, unit: "°C" },
-    river_level: { label: "River Gauge Offset", min: 0, max: 15, step: 0.1, unit: "meters" }
+    rainfall: { label: "Rainfall Amount (24h)", min: 0, max: 600, step: 5, unit: "mm" },
+    soil_moisture: { label: "Soil Wetness", min: 10, max: 100, step: 1, unit: "%" },
+    elevation: { label: "Land Height", min: 2, max: 3000, step: 10, unit: "meters" },
+    temperature: { label: "Air Temperature", min: 10, max: 45, step: 1, unit: "°C" },
+    river_level: { label: "River Level Height", min: 0, max: 15, step: 0.1, unit: "meters" }
   },
   earthquake: {
     tectonic_distance: { label: "Distance to Fault Line", min: 0, max: 500, step: 5, unit: "km" },
-    seismic_depth: { label: "Anomalous Hypocenter Depth", min: 5, max: 150, step: 1, unit: "km" },
-    magnitude_trend: { label: "Seismic Magnitude Trend", min: 1.0, max: 8.5, step: 0.1, unit: "Richter" },
-    historical_frequency: { label: "Historical Regional Activity", min: 0, max: 60, step: 1, unit: "eq/year" },
-    magnetic_anomaly: { label: "Local Geomagnetic Deflection", min: -100, max: 100, step: 2, unit: "nT" }
+    seismic_depth: { label: "Tremor Depth", min: 5, max: 150, step: 1, unit: "km" },
+    magnitude_trend: { label: "Expected Magnitude", min: 1.0, max: 8.5, step: 0.1, unit: "Richter" },
+    historical_frequency: { label: "Past Regional Tremors", min: 0, max: 60, step: 1, unit: "per year" },
+    magnetic_anomaly: { label: "Magnetic Deflection", min: -100, max: 100, step: 2, unit: "nT" }
   },
   cyclone: {
-    sea_temp: { label: "Ocean Surface Temperature", min: 24, max: 34, step: 0.5, unit: "°C" },
-    pressure: { label: "Sea Level Barometric Pressure", min: 900, max: 1020, step: 2, unit: "hPa" },
-    wind_speed: { label: "Maximum Surface Winds", min: 10, max: 300, step: 5, unit: "km/h" },
-    humidity: { label: "Mid-Tropospheric Humidity", min: 40, max: 100, step: 1, unit: "%" },
-    thermal_energy: { label: "Oceanic Heat Content", min: 0, max: 150, step: 2, unit: "kJ/cm²" }
+    sea_temp: { label: "Sea Surface Temperature", min: 24, max: 34, step: 0.5, unit: "°C" },
+    pressure: { label: "Air Pressure", min: 900, max: 1020, step: 2, unit: "hPa" },
+    wind_speed: { label: "Max Wind Velocity", min: 10, max: 300, step: 5, unit: "km/h" },
+    humidity: { label: "Air Humidity", min: 40, max: 100, step: 1, unit: "%" },
+    thermal_energy: { label: "Ocean Thermal Energy", min: 0, max: 150, step: 2, unit: "kJ/cm²" }
   },
   wildfire: {
-    temperature: { label: "Surface Air Temperature", min: 20, max: 50, step: 1, unit: "°C" },
-    humidity: { label: "Relative Air Humidity", min: 5, max: 70, step: 1, unit: "%" },
-    wind_speed: { label: "Local Wind Velocities", min: 0, max: 90, step: 2, unit: "km/h" },
-    drought_index: { label: "Keetch-Byram Drought Index", min: 0.0, max: 10.0, step: 0.1, unit: "rating" },
-    vegetation_density: { label: "Fuel/Vegetation Density", min: 10, max: 100, step: 1, unit: "%" }
+    temperature: { label: "Air Temperature", min: 20, max: 50, step: 1, unit: "°C" },
+    humidity: { label: "Relative Humidity", min: 5, max: 70, step: 1, unit: "%" },
+    wind_speed: { label: "Local Wind Speed", min: 0, max: 90, step: 2, unit: "km/h" },
+    drought_index: { label: "Drought Index (Keetch)", min: 0.0, max: 10.0, step: 0.1, unit: "rating" },
+    vegetation_density: { label: "Dry Bush Density", min: 10, max: 100, step: 1, unit: "%" }
   },
   landslide: {
-    slope_angle: { label: "Slope Incline Angle", min: 10, max: 75, step: 1, unit: "degrees" },
+    slope_angle: { label: "Mountain Slope Angle", min: 10, max: 75, step: 1, unit: "degrees" },
     soil_moisture: { label: "Soil Water Content", min: 10, max: 100, step: 1, unit: "%" },
-    rainfall_intensity: { label: "Short-term Precipitation Rate", min: 0, max: 150, step: 2, unit: "mm/hr" },
-    vegetation_coverage: { label: "Root System Anchoring Density", min: 5, max: 100, step: 1, unit: "%" },
-    seismic_activity: { label: "Ambient Microseismic Activity", min: 0, max: 8, step: 0.1, unit: "ML" }
+    rainfall_intensity: { label: "Rainfall Rate", min: 0, max: 150, step: 2, unit: "mm/hr" },
+    vegetation_coverage: { label: "Root Anchoring Trees", min: 5, max: 100, step: 1, unit: "%" },
+    seismic_activity: { label: "Ground Tremor Level", min: 0, max: 8, step: 0.1, unit: "ML" }
   }
 };
 
-// Citizen Friendly presets
 const citizenPresets: Record<string, Array<{ name: string; desc: string; icon: string; values: Record<string, number> }>> = {
   flood: [
     {
-      name: "Calm Sunny Day",
-      desc: "Clear summer days with dry ground.",
+      name: "Sunny Day (Normal)",
+      desc: "Warm summer days with dry ground conditions.",
       icon: "☀️",
       values: { rainfall: 10, soil_moisture: 20, elevation: 500, temperature: 32, river_level: 1.0 }
     },
     {
-      name: "Heavy Monsoon Weeks",
-      desc: "Persistent rainy period causing saturations.",
+      name: "Monsoon Season",
+      desc: "Continuous rain saturated ground soil.",
       icon: "🌧️",
       values: { rainfall: 220, soil_moisture: 78, elevation: 150, temperature: 24, river_level: 6.2 }
     },
     {
-      name: "Severe Cloudburst Flood",
-      desc: "Dangerous flash rains overflowing riverbanks.",
+      name: "Cloudburst Flooding",
+      desc: "Extreme flash rain overflowing rivers.",
       icon: "⛈️",
       values: { rainfall: 490, soil_moisture: 96, elevation: 15, temperature: 19, river_level: 12.8 }
     }
   ],
   earthquake: [
     {
-      name: "Solid Flat Plateau",
-      desc: "Zero active vibrations or fault risks.",
+      name: "Stable Terrain (Normal)",
+      desc: "Zero active vibrations or fault line shifts.",
       icon: "🟢",
       values: { tectonic_distance: 480, seismic_depth: 90, magnitude_trend: 1.2, historical_frequency: 1, magnetic_anomaly: 2 }
     },
     {
-      name: "Minor Land Tremors",
-      desc: "Small localized shaking felt briefly.",
+      name: "Mild Ground Shaking",
+      desc: "Small vibrations felt locally for a short time.",
       icon: "🟡",
       values: { tectonic_distance: 160, seismic_depth: 45, magnitude_trend: 4.8, historical_frequency: 15, magnetic_anomaly: 35 }
     },
     {
-      name: "Major Fault Displacement",
-      desc: "Shallow, powerful tectonic adjustment.",
+      name: "Severe Tectonic Shift",
+      desc: "Shallow, powerful fault line displacement.",
       icon: "🔴",
       values: { tectonic_distance: 18, seismic_depth: 10, magnitude_trend: 7.9, historical_frequency: 48, magnetic_anomaly: 88 }
     }
   ],
   cyclone: [
     {
-      name: "Mild Sea Breeze",
-      desc: "Gentle offshore winds, normal pressure.",
+      name: "Gentle Breeze (Normal)",
+      desc: "Calm offshore winds, regular weather.",
       icon: "🍃",
       values: { sea_temp: 25.0, pressure: 1012, wind_speed: 12, humidity: 50, thermal_energy: 10 }
     },
     {
-      name: "Depression Warning",
-      desc: "Low-pressure cell forming in bay zones.",
+      name: "Low Pressure Warning",
+      desc: "Low-pressure storm cells forming in ocean.",
       icon: "🌧️",
       values: { sea_temp: 27.8, pressure: 982, wind_speed: 75, humidity: 80, thermal_energy: 70 }
     },
     {
       name: "Super Cyclone Landfall",
-      desc: "Category 5 force winds hitting coast.",
+      desc: "Extremely strong coastal wind storm hits land.",
       icon: "🌀",
       values: { sea_temp: 32.0, pressure: 915, wind_speed: 255, humidity: 96, thermal_energy: 140 }
     }
   ],
   wildfire: [
     {
-      name: "Moist Forest Cover",
-      desc: "Cool, damp air protecting canopy areas.",
+      name: "Green Forest (Normal)",
+      desc: "Cool, damp air protecting the woods.",
       icon: "🌲",
       values: { temperature: 17, humidity: 72, wind_speed: 10, drought_index: 0.8, vegetation_density: 88 }
     },
     {
       name: "Dry Heatwave Summer",
-      desc: "High temp afternoon with dry air.",
+      desc: "Hot afternoon with dry air and grass.",
       icon: "☀️",
       values: { temperature: 36, humidity: 22, wind_speed: 25, drought_index: 4.5, vegetation_density: 62 }
     },
     {
-      name: "Extreme Drought Sparks",
-      desc: "Highly flammable wind gusts, high heat.",
+      name: "Extreme Fire Threat",
+      desc: "Highly flammable dry wind gusts, hot heat.",
       icon: "🔥",
       values: { temperature: 47, humidity: 6, wind_speed: 65, drought_index: 9.4, vegetation_density: 40 }
     }
   ],
   landslide: [
     {
-      name: "Stable Solid Base",
-      desc: "Low incline flat soil, dense trees.",
+      name: "Stable Mountain (Normal)",
+      desc: "Gentle slopes, solid rocky bases, lots of trees.",
       icon: "🏔️",
       values: { slope_angle: 12, soil_moisture: 20, rainfall_intensity: 5, vegetation_coverage: 92, seismic_activity: 0.1 }
     },
     {
-      name: "Saturated Soil Incline",
-      desc: "Moderate hill slopes after monsoon rain.",
+      name: "Wet Muddy Incline",
+      desc: "Hill slopes after moderate monsoon rains.",
       icon: "🌧️",
       values: { slope_angle: 32, soil_moisture: 75, rainfall_intensity: 55, vegetation_coverage: 50, seismic_activity: 1.0 }
     },
     {
-      name: "Deforested Cliff Storm",
-      desc: "Steep mountain ravine mudflow risk.",
+      name: "Steep De-forested Cliff",
+      desc: "Steep slopes with loose dirt during major storm.",
       icon: "⛈️",
       values: { slope_angle: 68, soil_moisture: 98, rainfall_intensity: 130, vegetation_coverage: 8, seismic_activity: 4.2 }
     }
@@ -223,8 +221,8 @@ export default function PredictionPage() {
     setCalculating(true);
     setResult(null);
 
-    // Simulate short computation delay for premium visual feedback
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    // Simulate short computation delay for visual feel
+    await new Promise((resolve) => setTimeout(resolve, 1200));
 
     try {
       const res = await fetch(`http://localhost:8000/api/predict/${activeTab}`, {
@@ -238,10 +236,10 @@ export default function PredictionPage() {
         setResult(data);
         triggerVFX(data.severity);
       } else {
-        throw new Error("Model response failed");
+        throw new Error("Model failed");
       }
     } catch (err) {
-      console.warn("Backend API not reachable. Performing mock prediction offline.", err);
+      console.warn("Backend API offline. Running local decision tree algorithm.", err);
       
       const tabInputs = inputs[activeTab];
       let severity: "Low" | "Moderate" | "High" | "Critical" = "Low";
@@ -281,7 +279,7 @@ export default function PredictionPage() {
 
       const mockRes: PredictionResult = {
         severity,
-        confidence: 0.82 + Math.random() * 0.15,
+        confidence: 0.85 + Math.random() * 0.1,
         risk_percentage: riskVal,
         probabilities: {
           Low: severity === "Low" ? 0.8 : 0.05,
@@ -315,26 +313,31 @@ export default function PredictionPage() {
 
   const getCitizenExplanation = (type: string, sev: string, risk: number) => {
     if (sev === "Critical" || sev === "High") {
-      return `This simulation indicates a high danger of ${type} with a ${risk}% likelihood. High warning: evacuation plans should be prepared, and travel near hazard zones should be suspended immediately.`;
+      return `Dangerous conditions. The AI forecasts a ${risk}% risk of severe ${type} events in this scenario. Evacuation checklists should be reviewed.`;
     }
     if (sev === "Moderate") {
-      return `This combination of variables points to a moderate risk of ${type}. Condition remains stable but warning indicators suggest preparing standard weather supplies.`;
+      return `Moderate warning status. The inputs show an elevated risk of ${type} (${risk}%). Standard precautions are advised.`;
     }
-    return `Conditions are fully safe. This scenario represents normal, calm environmental readings. No caution is required.`;
+    return `Conditions are Safe. The AI indicates a very low risk of ${type} (${risk}%). No safety actions are needed.`;
   };
 
+  // SVGGauge Helper Constants
+  const circleRadius = 50;
+  const strokeWidth = 8;
+  const circumference = 2 * Math.PI * circleRadius;
+
   return (
-    <div className="space-y-6 max-w-5xl mx-auto">
+    <div className="space-y-6 max-w-5xl mx-auto font-sans">
       
       {/* Title */}
       <div className="flex flex-col md:flex-row md:items-center justify-between border-b border-cyber-border/20 pb-4 gap-4">
         <div>
-          <div className="flex items-center space-x-2 text-[10px] tracking-wider text-neon-purple font-mono uppercase">
-            <Sparkles className="h-3.5 w-3.5 text-neon-purple animate-pulse" />
-            <span>Planetary Climate Core Systems</span>
+          <div className="flex items-center space-x-2 text-xs tracking-wider text-neon-purple font-bold uppercase">
+            <Sparkles className="h-4 w-4 text-neon-purple animate-pulse" />
+            <span>Hazard Prediction & Evacuation Modeler</span>
           </div>
           <h2 className="text-3xl font-extrabold tracking-tight text-white mt-1">
-            AI Hazard Simulation <span className="bg-gradient-to-r from-neon-blue to-neon-purple bg-clip-text text-transparent font-mono">PREDICTOR</span>
+            AI Disaster <span className="bg-gradient-to-r from-neon-blue to-neon-purple bg-clip-text text-transparent font-mono">SIMULATOR</span>
           </h2>
         </div>
       </div>
@@ -348,7 +351,7 @@ export default function PredictionPage() {
               setActiveTab(tab);
               setResult(null);
             }}
-            className={`rounded-xl px-5 py-3 font-sans text-xs font-bold tracking-wider transition-all duration-300 uppercase flex items-center space-x-2 border ${
+            className={`rounded-xl px-5 py-3 text-xs font-bold tracking-wide transition-all duration-300 uppercase flex items-center space-x-2 border ${
               activeTab === tab
                 ? "border-neon-blue bg-neon-blue/15 text-neon-cyan shadow-glow-blue"
                 : "border-cyber-border/30 text-gray-400 bg-black/40 hover:text-white hover:border-cyber-border/80"
@@ -359,33 +362,33 @@ export default function PredictionPage() {
             <span>{tab === "cyclone" && "🌀"}</span>
             <span>{tab === "wildfire" && "🔥"}</span>
             <span>{tab === "landslide" && "🏔️"}</span>
-            <span>{tab} Predictor</span>
+            <span className="capitalize">{tab}</span>
           </button>
         ))}
       </div>
 
-      {/* Citizen Simulation Presets Header */}
-      <div className="rounded-2xl border border-cyber-border/30 bg-black/40 p-4 space-y-3">
-        <h3 className="font-sans text-xs font-bold text-white uppercase tracking-wider flex items-center space-x-2">
+      {/* Presets - Step 1 */}
+      <div className="rounded-2xl border border-cyber-border/30 bg-black/40 p-5 space-y-3">
+        <h3 className="text-xs font-bold text-white uppercase tracking-wider flex items-center space-x-2">
           <Shield className="h-4.5 w-4.5 text-neon-cyan animate-pulse" />
-          <span>⚡ Step 1: Click a Simple Preset (Easy for Common Citizens)</span>
+          <span>⚡ Step 1: Click a Simple Scenario Preset</span>
         </h3>
-        <p className="text-xs text-gray-400 leading-normal">
-          Don't know the exact scientific metrics? Click a simple preset button below to load pre-configured realistic scenarios for Indian regions, then click Run!
+        <p className="text-xs text-gray-300 leading-normal">
+          Select one of the pre-set situations below to instantly configure typical climate variables for Indian states.
         </p>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
           {citizenPresets[activeTab].map((preset) => (
             <button
               key={preset.name}
               onClick={() => applyPreset(preset.values)}
-              className="rounded-xl border border-cyber-border/30 bg-dark-bg/60 p-3 hover:border-neon-cyan hover:bg-neon-cyan/5 transition-all text-left flex flex-col justify-between group active:scale-95 duration-200"
+              className="rounded-xl border border-cyber-border/30 bg-dark-bg/60 p-3.5 hover:border-neon-cyan hover:bg-neon-cyan/5 transition-all text-left flex flex-col justify-between group active:scale-95 duration-200"
             >
               <div className="flex items-center space-x-2">
                 <span className="text-xl">{preset.icon}</span>
                 <span className="font-bold text-xs text-white group-hover:text-neon-cyan transition-colors">{preset.name}</span>
               </div>
-              <span className="text-[10px] text-gray-400 font-sans mt-1.5 leading-normal">{preset.desc}</span>
+              <span className="text-[10px] text-gray-400 font-sans mt-2 leading-relaxed">{preset.desc}</span>
             </button>
           ))}
         </div>
@@ -393,12 +396,12 @@ export default function PredictionPage() {
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         
-        {/* Left: Interactive Input Panel */}
+        {/* Left Panel: Sliders for Advanced Customization */}
         <div className="rounded-2xl border border-cyber-border/40 bg-dark-bg/60 p-5 space-y-6">
           <div className="flex items-center space-x-2 border-b border-cyber-border/20 pb-2">
             <Cpu className="h-4 w-4 text-neon-blue animate-pulse" />
-            <span className="font-sans text-xs font-bold text-white uppercase tracking-wider">
-              Step 2: Fine-tune Parameters (Advanced)
+            <span className="text-xs font-bold text-white uppercase tracking-wider">
+              Step 2: Customize Weather Values (Optional)
             </span>
           </div>
 
@@ -409,8 +412,8 @@ export default function PredictionPage() {
 
               return (
                 <div key={feature} className="space-y-2">
-                  <div className="flex justify-between font-sans text-xs">
-                    <span className="text-gray-300 font-medium">{details.label}</span>
+                  <div className="flex justify-between text-xs">
+                    <span className="text-gray-300 font-semibold">{details.label}</span>
                     <span className="text-neon-cyan font-bold">
                       {currentVal} {details.unit}
                     </span>
@@ -433,26 +436,25 @@ export default function PredictionPage() {
           <button
             onClick={executeAIModel}
             disabled={calculating}
-            className="w-full flex items-center justify-center space-x-2 rounded-xl bg-gradient-to-r from-neon-blue to-neon-purple py-4 font-sans text-xs font-extrabold tracking-widest text-white shadow-glow-blue hover:opacity-90 active:scale-[0.98] disabled:opacity-50 transition-all cursor-pointer"
+            className="w-full flex items-center justify-center space-x-2 rounded-xl bg-gradient-to-r from-neon-blue to-neon-purple py-4 text-xs font-bold tracking-widest text-white shadow-glow-blue hover:opacity-90 active:scale-[0.98] disabled:opacity-50 transition-all cursor-pointer"
           >
             {calculating ? (
               <>
-                <RefreshCw className="h-4 w-4 animate-spin" />
-                <span>COMPUTING NEURAL PREDICTOR...</span>
+                <RefreshCw className="h-4.5 w-4.5 animate-spin" />
+                <span>AI MODEL CALCULATING...</span>
               </>
             ) : (
               <>
-                <Play className="h-4 w-4" />
-                <span>EXECUTE AI PREDICTION</span>
+                <Play className="h-4.5 w-4.5" />
+                <span>RUN AI DISASTER PREDICTION</span>
               </>
             )}
           </button>
         </div>
 
-        {/* Right: Results Analysis Screen */}
+        {/* Right Panel: Results dial meter and safety checklist */}
         <div className="rounded-2xl border border-cyber-border/40 bg-dark-bg/60 p-5 flex flex-col justify-between relative overflow-hidden">
           
-          {/* Scan Line effect on calculating */}
           {calculating && (
             <div className="absolute inset-0 bg-neon-blue/5 z-10 pointer-events-none">
               <div className="w-full h-1.5 bg-neon-blue/30 shadow-glow-blue absolute top-0 animate-scan" />
@@ -461,83 +463,92 @@ export default function PredictionPage() {
 
           <div className="flex items-center space-x-2 border-b border-cyber-border/20 pb-2">
             <BarChart2 className="h-4 w-4 text-neon-purple animate-pulse" />
-            <span className="font-sans text-xs font-bold text-white uppercase tracking-wider">
-              AI Hazard Forecast Report
+            <span className="text-xs font-bold text-white uppercase tracking-wider">
+              AI Safety Analysis Report
             </span>
           </div>
 
           {result ? (
-            <div className="space-y-5 py-4 flex-1 flex flex-col justify-between">
+            <div className="space-y-5 py-3 flex-1 flex flex-col justify-between">
               
-              {/* Severity Alert */}
+              {/* Circular Gauge Representation of Risk Index */}
+              <div className="flex flex-col items-center justify-center pt-2">
+                <div className="relative flex items-center justify-center h-32 w-32">
+                  <svg className="w-full h-full transform -rotate-90">
+                    <circle
+                      cx="64"
+                      cy="64"
+                      r={circleRadius}
+                      className="stroke-black/50"
+                      strokeWidth={strokeWidth}
+                      fill="transparent"
+                    />
+                    <circle
+                      cx="64"
+                      cy="64"
+                      r={circleRadius}
+                      className={`transition-all duration-1000 ease-out ${
+                        result.risk_percentage > 70 
+                          ? "stroke-neon-red" 
+                          : result.risk_percentage > 40
+                          ? "stroke-orange-400"
+                          : "stroke-green-400"
+                      }`}
+                      strokeWidth={strokeWidth}
+                      strokeDasharray={circumference}
+                      strokeDashoffset={circumference - (result.risk_percentage / 100) * circumference}
+                      strokeLinecap="round"
+                      fill="transparent"
+                    />
+                  </svg>
+                  <div className="absolute text-center">
+                    <div className="text-2xl font-black text-white">{result.risk_percentage}%</div>
+                    <div className="text-[8px] text-gray-400 font-bold uppercase tracking-wider">Risk Level</div>
+                  </div>
+                </div>
+                
+                {/* Confidence bar */}
+                <div className="mt-3 text-center">
+                  <span className="text-[10px] text-gray-400 uppercase font-semibold">AI Confidence: </span>
+                  <span className="text-neon-purple font-bold">{(result.confidence * 100).toFixed(1)}%</span>
+                </div>
+              </div>
+
+              {/* Status Alert Message */}
               <div className={`rounded-xl border p-4 flex items-start space-x-3 transition-all ${getSeverityStyles(result.severity)}`}>
                 <AlertTriangle className="h-5 w-5 mt-0.5 flex-shrink-0" />
                 <div>
-                  <h4 className="font-sans text-xs font-extrabold tracking-widest uppercase">
-                    SEVERITY: {result.severity} ALERT
+                  <h4 className="text-xs font-black tracking-wider uppercase">
+                    SEVERITY: {result.severity} RISK
                   </h4>
-                  <p className="font-sans text-xs text-gray-300 mt-1 leading-relaxed">
+                  <p className="text-xs text-gray-200 mt-1 leading-relaxed">
                     {getCitizenExplanation(activeTab, result.severity, result.risk_percentage)}
                   </p>
                 </div>
               </div>
 
-              {/* Meter Stats */}
-              <div className="grid grid-cols-2 gap-4">
-                
-                {/* Risk Level gauge */}
-                <div className="rounded-xl border border-cyber-border/20 bg-black/40 p-4 text-center">
-                  <div className="font-sans text-[10px] text-gray-400">RISK INDEX</div>
-                  <div className={`font-sans text-3xl font-black mt-1 ${
-                    result.risk_percentage > 70 ? "text-neon-red text-shadow-red" : "text-neon-cyan"
-                  }`}>
-                    {result.risk_percentage}%
-                  </div>
-                  <div className="h-1.5 w-full bg-black/50 rounded overflow-hidden mt-2 border border-cyber-border/20">
-                    <div 
-                      className={`h-full transition-all duration-700 ${
-                        result.risk_percentage > 70 ? "bg-neon-red" : "bg-neon-cyan"
-                      }`}
-                      style={{ width: `${result.risk_percentage}%` }}
-                    />
-                  </div>
-                </div>
-
-                {/* Accuracy Confidence */}
-                <div className="rounded-xl border border-cyber-border/20 bg-black/40 p-4 text-center">
-                  <div className="font-sans text-[10px] text-gray-400">AI PROBABILITY</div>
-                  <div className="font-sans text-3xl font-black mt-1 text-neon-purple">
-                    {(result.confidence * 100).toFixed(1)}%
-                  </div>
-                  <div className="font-sans text-[8px] text-gray-500 mt-2">
-                    CLASSIFIER RELIABILITY
-                  </div>
-                </div>
-
-              </div>
-
-              {/* Suggestions */}
-              <div className="rounded-xl border border-cyber-border/20 bg-white/5 p-4 font-sans text-xs text-gray-300 space-y-2">
+              {/* Citizen Evacuation Recommendations */}
+              <div className="rounded-xl border border-cyber-border/20 bg-white/5 p-4 text-xs text-gray-300 space-y-2">
                 <div className="flex items-center space-x-1.5 text-white font-bold">
                   <Shield className="h-4.5 w-4.5 text-neon-cyan" />
-                  <span>PREVENTATIVE EVACUATION ACTIONS:</span>
+                  <span>SAFETY & COMPLIANCE STEPS:</span>
                 </div>
                 {result.severity === "Critical" || result.severity === "High" ? (
-                  <ul className="space-y-1.5">
+                  <ul className="space-y-2">
                     <li className="flex items-start space-x-2">
                       <CheckCircle2 className="h-4 w-4 text-neon-red flex-shrink-0 mt-0.5" />
-                      <span>Prepare bags with medications and emergency identification papers.</span>
+                      <span>Prepare emergency medical kits, water, and identity papers.</span>
                     </li>
                     <li className="flex items-start space-x-2">
                       <CheckCircle2 className="h-4 w-4 text-neon-red flex-shrink-0 mt-0.5" />
-                      <span>Avoid tunnels or mountains. Evacuate immediately if instructed by NDRF.</span>
+                      <span>Follow instructions from regional disaster authorities (NDRF/SDMA).</span>
                     </li>
                   </ul>
                 ) : (
-                  <ul className="space-y-1.5">
+                  <ul className="space-y-2">
                     <li className="flex items-start space-x-2">
                       <CheckCircle2 className="h-4 w-4 text-green-400 flex-shrink-0 mt-0.5" />
-                      <span>No evacuation required. Monitor the telemetry stream regularly.</span>
+                      <span>No action is required. Keep checking local forecasts regularly.</span>
                     </li>
                   </ul>
                 )}
@@ -546,8 +557,8 @@ export default function PredictionPage() {
             </div>
           ) : (
             <div className="flex-1 flex flex-col items-center justify-center text-center p-8 space-y-3 font-sans">
-              <Cpu className="h-12 w-12 text-cyber-border/80 animate-pulse" />
-              <div className="text-xs text-gray-400">AWAITING CLIMATE METRICS FOR CLASSIFICATION...</div>
+              <Cpu className="h-12 w-12 text-cyber-border/60 animate-pulse" />
+              <div className="text-xs text-gray-400 uppercase tracking-wide">Ready to simulate. Select a scenario preset and click predict.</div>
             </div>
           )}
 

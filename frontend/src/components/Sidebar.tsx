@@ -21,13 +21,13 @@ export default function Sidebar() {
   const [isOpen, setIsOpen] = useState(false);
 
   const navItems = [
-    { name: "Terminal Gate", href: "/", icon: Eye },
-    { name: "Live Dashboard", href: "/dashboard", icon: LayoutDashboard },
-    { name: "AI Prediction Engine", href: "/prediction", icon: Cpu },
-    { name: "Climate Analytics", href: "/analytics", icon: BarChart3 },
-    { name: "Emergency SOS Unit", href: "/emergency", icon: ShieldAlert },
-    { name: "Command Console", href: "/admin", icon: AlertOctagon },
-    { name: "About Station", href: "/about", icon: HelpCircle },
+    { name: "Home & Search", href: "/", icon: Eye },
+    { name: "Live Alerts & Map", href: "/dashboard", icon: LayoutDashboard },
+    { name: "AI Disaster Simulator", href: "/prediction", icon: Cpu },
+    { name: "Climate Trends", href: "/analytics", icon: BarChart3 },
+    { name: "Emergency SOS Help", href: "/emergency", icon: ShieldAlert },
+    { name: "Control Center", href: "/admin", icon: AlertOctagon },
+    { name: "How it Works", href: "/about", icon: HelpCircle },
   ];
 
   const toggleSidebar = () => setIsOpen(!isOpen);
@@ -37,7 +37,7 @@ export default function Sidebar() {
       {/* Mobile Toggle Button */}
       <button
         onClick={toggleSidebar}
-        className="fixed top-4 right-4 z-50 rounded-lg border border-cyber-border/40 bg-dark-bg/80 p-2 text-neon-blue shadow-glow-blue md:hidden focus:outline-none"
+        className="fixed top-4 right-4 z-50 rounded-lg border border-cyber-border/45 bg-dark-bg/80 p-2 text-neon-blue shadow-glow-blue md:hidden focus:outline-none"
       >
         {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
       </button>
@@ -55,11 +55,11 @@ export default function Sidebar() {
               <Eye className="h-5 w-5 animate-pulse" />
             </div>
             <div className="flex flex-col">
-              <span className="font-mono text-xs font-semibold tracking-[0.2em] text-neon-blue uppercase">
-                DisasterVision
+              <span className="font-sans text-sm font-black tracking-wide text-white">
+                DisasterVision <span className="text-neon-cyan font-mono text-[9px]">AI</span>
               </span>
-              <span className="font-mono text-[9px] tracking-wider text-neon-purple uppercase font-bold">
-                AI Threat Matrix
+              <span className="text-[10px] text-gray-400 font-sans">
+                India Safety Portal
               </span>
             </div>
           </Link>
