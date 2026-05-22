@@ -75,8 +75,8 @@ export default function EmergencyPage() {
       colors: ["#FF4D4D", "#000000", "#7B2FF7"]
     });
 
-    const mockLat = 37.7749 + (Math.random() * 0.05 - 0.025);
-    const mockLng = -122.4194 + (Math.random() * 0.05 - 0.025);
+    const mockLat = 20.5937 + (Math.random() * 2.0 - 1.0);
+    const mockLng = 78.9629 + (Math.random() * 2.0 - 1.0);
 
     try {
       const res = await fetch("http://localhost:8000/api/sos", {
@@ -103,9 +103,9 @@ export default function EmergencyPage() {
         // Add dispatch alerts logs
         setDispatchLogs([
           `[${new Date().toLocaleTimeString()}] BEACON BROADCASTED - ID: ${data.beacon_id}`,
-          `[${new Date().toLocaleTimeString()}] Coordinate Lock: ${mockLat.toFixed(4)}°N, ${mockLng.toFixed(4)}°W`,
-          `[${new Date().toLocaleTimeString()}] Local Responders Notified. Dispatching helicopter air ambulance.`,
-          `[${new Date().toLocaleTimeString()}] SMS Notification broadcasted to local security channels.`
+          `[${new Date().toLocaleTimeString()}] Coordinate Lock: ${mockLat.toFixed(4)}°N, ${mockLng.toFixed(4)}°E`,
+          `[${new Date().toLocaleTimeString()}] Local Responders Notified. Dispatching NDRF relief unit.`,
+          `[${new Date().toLocaleTimeString()}] SMS Notification broadcasted to regional security channels.`
         ]);
       } else {
         throw new Error("SOS API call failed");
@@ -117,12 +117,12 @@ export default function EmergencyPage() {
         id: Math.floor(Math.random() * 80000) + 10000,
         message: "Offline Emergency Signal Active. Visual beacons engaged on local network interface.",
         shelters: [
-          { name: "Metro Relief Shelter - Primary Base", distance_km: 1.8, lat: mockLat + 0.008, lng: mockLng - 0.005, capacity_status: "65% Occupied" },
-          { name: "Sutter Health Urgent Care Wing", distance_km: 3.4, lat: mockLat - 0.012, lng: mockLng + 0.015, capacity_status: "80% Occupied" },
+          { name: "NDRF Emergency Shelter - Primary Base", distance_km: 1.8, lat: mockLat + 0.008, lng: mockLng - 0.005, capacity_status: "65% Occupied" },
+          { name: "District Civil Relief Hospital & Shelter", distance_km: 3.4, lat: mockLat - 0.012, lng: mockLng + 0.015, capacity_status: "80% Occupied" },
         ],
         contacts: [
-          { department: "National Disaster Response Unit", hotline: "1088" },
-          { department: "Red Cross Disaster Hotline", hotline: "1800-733-2767" }
+          { department: "National Disaster Response Force", hotline: "1078" },
+          { department: "Red Cross Disaster Hotline", hotline: "1800-RED-CROSS" }
         ]
       });
 

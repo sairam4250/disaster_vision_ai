@@ -45,7 +45,7 @@ interface AlertFeedItem {
 
 export default function DashboardPage() {
   const { setParticleMode } = useWeather();
-  const [selectedRegion, setSelectedRegion] = useState("Bay of Bengal / Indian Ocean");
+  const [selectedRegion, setSelectedRegion] = useState("Bay of Bengal (Odisha Coast)");
   const [weather, setWeather] = useState<WeatherData | null>(null);
   const [alerts, setAlerts] = useState<AlertFeedItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -75,7 +75,7 @@ export default function DashboardPage() {
         }
       } catch (err) {
         console.warn("Backend API not reachable. Loading mock weather fallback.", err);
-        // Fallback mock weather patterns
+        // Fallback mock weather patterns for India adaptation regions
         let mockData: WeatherData = {
           region: selectedRegion,
           temperature: 28.5,
@@ -89,27 +89,27 @@ export default function DashboardPage() {
           satellite_overlay: { storm_radar_visual: false, wildfire_thermal_hotspots: false, cloud_density_percent: 60 }
         };
 
-        if (selectedRegion.includes("California")) {
+        if (selectedRegion.includes("Western Ghats") || selectedRegion.includes("Maharashtra") || selectedRegion.includes("Wghats")) {
           mockData = {
             region: selectedRegion,
-            temperature: 41.2,
+            temperature: 43.5,
             humidity: 12.0,
-            wind_speed: 55.0,
-            pressure: 1012.0,
+            wind_speed: 48.0,
+            pressure: 1005.0,
             rainfall: 0.0,
-            drought_index: 8.9,
-            seismic_activity: 0.4,
-            soil_moisture: 14.0,
-            satellite_overlay: { storm_radar_visual: false, wildfire_thermal_hotspots: true, cloud_density_percent: 10 }
+            drought_index: 8.8,
+            seismic_activity: 0.5,
+            soil_moisture: 15.0,
+            satellite_overlay: { storm_radar_visual: false, wildfire_thermal_hotspots: true, cloud_density_percent: 15 }
           };
           setParticleMode("smoke");
-        } else if (selectedRegion.includes("Bengal") || selectedRegion.includes("Ocean")) {
+        } else if (selectedRegion.includes("Bengal") || selectedRegion.includes("Odisha")) {
           mockData = {
             region: selectedRegion,
-            temperature: 29.8,
-            pressure: 955.0,
+            temperature: 29.5,
+            pressure: 945.0,
             wind_speed: 215.0,
-            humidity: 94.0,
+            humidity: 92.0,
             rainfall: 185.0,
             drought_index: 1.0,
             seismic_activity: 0.8,
@@ -117,20 +117,48 @@ export default function DashboardPage() {
             satellite_overlay: { storm_radar_visual: true, wildfire_thermal_hotspots: false, cloud_density_percent: 100 }
           };
           setParticleMode("storm");
-        } else if (selectedRegion.includes("Brahmaputra") || selectedRegion.includes("India")) {
+        } else if (selectedRegion.includes("Brahmaputra") || selectedRegion.includes("Assam")) {
           mockData = {
             region: selectedRegion,
-            temperature: 24.1,
+            temperature: 23.5,
             humidity: 98.0,
-            wind_speed: 22.0,
+            wind_speed: 25.0,
             pressure: 1002.0,
-            rainfall: 320.0,
+            rainfall: 420.0,
             drought_index: 1.0,
             seismic_activity: 0.3,
             soil_moisture: 99.0,
-            satellite_overlay: { storm_radar_visual: false, wildfire_thermal_hotspots: false, cloud_density_percent: 95 }
+            satellite_overlay: { storm_radar_visual: false, wildfire_thermal_hotspots: false, cloud_density_percent: 100 }
           };
           setParticleMode("lightning");
+        } else if (selectedRegion.includes("Himalaya") || selectedRegion.includes("Uttarakhand")) {
+          mockData = {
+            region: selectedRegion,
+            temperature: 18.2,
+            humidity: 94.0,
+            wind_speed: 15.0,
+            pressure: 1008.0,
+            rainfall: 140.0,
+            drought_index: 1.2,
+            seismic_activity: 1.8,
+            soil_moisture: 92.0,
+            satellite_overlay: { storm_radar_visual: false, wildfire_thermal_hotspots: false, cloud_density_percent: 90 }
+          };
+          setParticleMode("rain");
+        } else if (selectedRegion.includes("Kachchh") || selectedRegion.includes("Gujarat")) {
+          mockData = {
+            region: selectedRegion,
+            temperature: 32.4,
+            humidity: 45.0,
+            wind_speed: 20.0,
+            pressure: 1010.0,
+            rainfall: 2.0,
+            drought_index: 4.5,
+            seismic_activity: 6.2,
+            soil_moisture: 35.0,
+            satellite_overlay: { storm_radar_visual: false, wildfire_thermal_hotspots: false, cloud_density_percent: 40 }
+          };
+          setParticleMode("none");
         }
         
         setWeather(mockData);

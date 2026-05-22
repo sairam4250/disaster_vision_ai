@@ -56,11 +56,11 @@ def init_db():
     cursor.execute("SELECT COUNT(*) FROM alerts")
     if cursor.fetchone()[0] == 0:
         seed_data = [
-            ("Cyclone", "Critical", "Indian Ocean / Bay of Bengal", "Cyclone 'Amphan II' forming. Sustained wind speeds exceeding 210 km/h. Evacuate low-lying areas.", datetime.now().isoformat(), 1),
-            ("Wildfire", "High", "Western Australia / California Coast", "Wildfire spreading rapidly due to 42°C temp and 45 knot gusts. Containment at 5%.", datetime.now().isoformat(), 1),
-            ("Earthquake", "Moderate", "Honshu Shore, Japan", "M 6.1 seismic anomaly registered 15km depth. Low immediate tsunami threat, keep vigilant.", datetime.now().isoformat(), 1),
-            ("Flood", "High", "Brahmaputra Basin, India", "River levels breached critical thresholds. Heavy monsoon rainfall (350mm) forecasted for next 48 hrs.", datetime.now().isoformat(), 1),
-            ("Landslide", "Moderate", "Northern Highlands, Philippines", "Soil saturation level reached 92% after prolonged precipitation. High risk of debris flow.", datetime.now().isoformat(), 1)
+            ("Cyclone", "Critical", "Bay of Bengal (Odisha Coast)", "Super Cyclone 'Amphan II' forming. Sustained wind speeds exceeding 210 km/h. Evacuation active for coastal lowlands.", datetime.now().isoformat(), 1),
+            ("Wildfire", "High", "Western Ghats Forest Zone (Maharashtra)", "Forest fires detected in Western Ghats deciduous slopes due to dry heatwave and 43°C temperatures.", datetime.now().isoformat(), 1),
+            ("Earthquake", "Moderate", "Kachchh Seismic Fault (Bhuj, Gujarat)", "M 5.8 earthquake registered along the Kachchh rift zone. Pre-shocks detected, structural inspections advised.", datetime.now().isoformat(), 1),
+            ("Flood", "High", "Brahmaputra Basin (Assam)", "River levels breached critical thresholds in Assam. Intense monsoonal downpours (420mm) expected over 48 hours.", datetime.now().isoformat(), 1),
+            ("Landslide", "Moderate", "Himalayan Landslide Belt (Uttarakhand)", "Monsoon rains triggered slope saturation at 94% on Uttarakhand highway corridors. High debris flow warnings active.", datetime.now().isoformat(), 1)
         ]
         cursor.executemany("""
         INSERT INTO alerts (type, severity, region, message, timestamp, active)

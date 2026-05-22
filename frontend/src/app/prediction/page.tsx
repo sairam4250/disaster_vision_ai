@@ -52,39 +52,39 @@ const initialFeatures = {
 
 const featureDetails: Record<string, Record<string, { label: string; min: number; max: number; step: number; unit: string }>> = {
   flood: {
-    rainfall: { label: "Rainfall Intensity", min: 0, max: 400, step: 5, unit: "mm/day" },
+    rainfall: { label: "Rainfall Intensity", min: 0, max: 600, step: 5, unit: "mm/day" },
     soil_moisture: { label: "Soil Saturation", min: 10, max: 100, step: 1, unit: "%" },
-    elevation: { label: "Elevation Above Sea Level", min: 5, max: 1000, step: 10, unit: "meters" },
-    temperature: { label: "Ambient Temperature", min: 10, max: 40, step: 1, unit: "°C" },
-    river_level: { label: "River Gauge Offset", min: 0, max: 10, step: 0.1, unit: "meters" }
+    elevation: { label: "Elevation Above Sea Level", min: 2, max: 3000, step: 10, unit: "meters" },
+    temperature: { label: "Ambient Temperature", min: 10, max: 45, step: 1, unit: "°C" },
+    river_level: { label: "River Gauge Offset", min: 0, max: 15, step: 0.1, unit: "meters" }
   },
   earthquake: {
     tectonic_distance: { label: "Distance to Fault Line", min: 0, max: 500, step: 5, unit: "km" },
-    seismic_depth: { label: "Anomalous Hypocenter Depth", min: 2, max: 700, step: 5, unit: "km" },
-    magnitude_trend: { label: "Seismic Magnitude Trend", min: 1.0, max: 9.0, step: 0.1, unit: "Richter" },
-    historical_frequency: { label: "Historical Regional Activity", min: 0, max: 50, step: 1, unit: "eq/year" },
+    seismic_depth: { label: "Anomalous Hypocenter Depth", min: 5, max: 150, step: 1, unit: "km" },
+    magnitude_trend: { label: "Seismic Magnitude Trend", min: 1.0, max: 8.5, step: 0.1, unit: "Richter" },
+    historical_frequency: { label: "Historical Regional Activity", min: 0, max: 60, step: 1, unit: "eq/year" },
     magnetic_anomaly: { label: "Local Geomagnetic Deflection", min: -100, max: 100, step: 2, unit: "nT" }
   },
   cyclone: {
-    sea_temp: { label: "Ocean Surface Temperature", min: 15, max: 35, step: 0.5, unit: "°C" },
-    pressure: { label: "Sea Level Barometric Pressure", min: 920, max: 1020, step: 2, unit: "hPa" },
-    wind_speed: { label: "Maximum Surface Winds", min: 10, max: 280, step: 5, unit: "km/h" },
-    humidity: { label: "Mid-Tropospheric Humidity", min: 30, max: 100, step: 1, unit: "%" },
-    thermal_energy: { label: "Oceanic Heat Content", min: 0, max: 120, step: 2, unit: "kJ/cm²" }
+    sea_temp: { label: "Ocean Surface Temperature", min: 24, max: 34, step: 0.5, unit: "°C" },
+    pressure: { label: "Sea Level Barometric Pressure", min: 900, max: 1020, step: 2, unit: "hPa" },
+    wind_speed: { label: "Maximum Surface Winds", min: 10, max: 300, step: 5, unit: "km/h" },
+    humidity: { label: "Mid-Tropospheric Humidity", min: 40, max: 100, step: 1, unit: "%" },
+    thermal_energy: { label: "Oceanic Heat Content", min: 0, max: 150, step: 2, unit: "kJ/cm²" }
   },
   wildfire: {
-    temperature: { label: "Surface Air Temperature", min: 15, max: 48, step: 1, unit: "°C" },
-    humidity: { label: "Relative Air Humidity", min: 5, max: 80, step: 1, unit: "%" },
-    wind_speed: { label: "Local Wind Velocities", min: 0, max: 80, step: 2, unit: "km/h" },
+    temperature: { label: "Surface Air Temperature", min: 20, max: 50, step: 1, unit: "°C" },
+    humidity: { label: "Relative Air Humidity", min: 5, max: 70, step: 1, unit: "%" },
+    wind_speed: { label: "Local Wind Velocities", min: 0, max: 90, step: 2, unit: "km/h" },
     drought_index: { label: "Keetch-Byram Drought Index", min: 0.0, max: 10.0, step: 0.1, unit: "rating" },
     vegetation_density: { label: "Fuel/Vegetation Density", min: 10, max: 100, step: 1, unit: "%" }
   },
   landslide: {
-    slope_angle: { label: "Slope Incline Angle", min: 5, max: 75, step: 1, unit: "degrees" },
+    slope_angle: { label: "Slope Incline Angle", min: 10, max: 75, step: 1, unit: "degrees" },
     soil_moisture: { label: "Soil Water Content", min: 10, max: 100, step: 1, unit: "%" },
-    rainfall_intensity: { label: "Short-term Precipitation Rate", min: 0, max: 120, step: 2, unit: "mm/hr" },
+    rainfall_intensity: { label: "Short-term Precipitation Rate", min: 0, max: 150, step: 2, unit: "mm/hr" },
     vegetation_coverage: { label: "Root System Anchoring Density", min: 5, max: 100, step: 1, unit: "%" },
-    seismic_activity: { label: "Ambient Microseismic Activity", min: 0, max: 10, step: 0.1, unit: "ML" }
+    seismic_activity: { label: "Ambient Microseismic Activity", min: 0, max: 8, step: 0.1, unit: "ML" }
   }
 };
 
@@ -127,32 +127,42 @@ export default function PredictionPage() {
       }
     } catch (err) {
       console.warn("Backend API not reachable. Performing mock prediction offline.", err);
-      // Run math heuristics matching ml_engine.py exactly
-      const tabInputs = inputs[activeTab];
-      let score = 0;
       
-      if (activeTab === "flood") {
-        score = (tabInputs.rainfall * 0.4) + (tabInputs.soil_moisture * 0.3) + (tabInputs.river_level * 3) - (tabInputs.elevation * 0.05);
-      } else if (activeTab === "earthquake") {
-        score = (tabInputs.magnitude_trend * 30) - (tabInputs.tectonic_distance * 0.15) - (tabInputs.seismic_depth * 0.05) + (tabInputs.historical_frequency * 1.5);
-      } else if (activeTab === "cyclone") {
-        score = (tabInputs.wind_speed * 0.4) + ((1020 - tabInputs.pressure) * 0.8) + ((tabInputs.sea_temp - 20) * 2.0) + (tabInputs.humidity * 0.2);
-      } else if (activeTab === "wildfire") {
-        score = (tabInputs.temperature * 2.5) - (tabInputs.humidity * 1.5) + (tabInputs.wind_speed * 0.5) + (tabInputs.drought_index * 12) + (tabInputs.vegetation_density * 0.3);
-      } else if (activeTab === "landslide") {
-        score = (tabInputs.slope_angle * 1.5) + (tabInputs.soil_moisture * 0.4) + (tabInputs.rainfall_intensity * 0.8) - (tabInputs.vegetation_coverage * 0.3) + (tabInputs.seismic_activity * 8);
-      }
-
-      // Severity levels classification thresholds
+      const tabInputs = inputs[activeTab];
       let severity: "Low" | "Moderate" | "High" | "Critical" = "Low";
       let riskVal = 10;
       
-      const maxScore = activeTab === "flood" ? 220 : activeTab === "cyclone" ? 160 : activeTab === "wildfire" ? 180 : 120;
-      riskVal = Math.min(Math.max(Math.round((score / maxScore) * 100), 5), 100);
-
-      if (riskVal > 85) severity = "Critical";
-      else if (riskVal > 60) severity = "High";
-      else if (riskVal > 30) severity = "Moderate";
+      if (activeTab === "flood") {
+        const isCrit = tabInputs.rainfall > 350 && tabInputs.river_level > 9;
+        const isHigh = tabInputs.rainfall > 200 && tabInputs.river_level > 5;
+        const isMod = tabInputs.rainfall > 80 || tabInputs.river_level > 2;
+        severity = isCrit ? "Critical" : isHigh ? "High" : isMod ? "Moderate" : "Low";
+        riskVal = isCrit ? 92 : isHigh ? 78 : isMod ? 45 : 12;
+      } else if (activeTab === "earthquake") {
+        const isCrit = tabInputs.magnitude_trend > 6.5 && tabInputs.tectonic_distance < 100 && tabInputs.seismic_depth < 50;
+        const isHigh = tabInputs.magnitude_trend > 5.0 && tabInputs.tectonic_distance < 200;
+        const isMod = tabInputs.magnitude_trend > 3.5 || tabInputs.historical_frequency > 30;
+        severity = isCrit ? "Critical" : isHigh ? "High" : isMod ? "Moderate" : "Low";
+        riskVal = isCrit ? 95 : isHigh ? 72 : isMod ? 48 : 15;
+      } else if (activeTab === "cyclone") {
+        const isCrit = tabInputs.wind_speed > 180 && tabInputs.sea_temp > 28 && tabInputs.pressure < 950;
+        const isHigh = tabInputs.wind_speed > 100 && tabInputs.pressure < 980;
+        const isMod = tabInputs.wind_speed > 50 || tabInputs.sea_temp > 26.5;
+        severity = isCrit ? "Critical" : isHigh ? "High" : isMod ? "Moderate" : "Low";
+        riskVal = isCrit ? 94 : isHigh ? 80 : isMod ? 52 : 18;
+      } else if (activeTab === "wildfire") {
+        const isCrit = tabInputs.temperature > 42 && tabInputs.humidity < 15 && tabInputs.drought_index > 7.5;
+        const isHigh = tabInputs.temperature > 35 && tabInputs.humidity < 25;
+        const isMod = tabInputs.temperature > 30 || tabInputs.drought_index > 5.0;
+        severity = isCrit ? "Critical" : isHigh ? "High" : isMod ? "Moderate" : "Low";
+        riskVal = isCrit ? 96 : isHigh ? 75 : isMod ? 42 : 14;
+      } else if (activeTab === "landslide") {
+        const isCrit = tabInputs.slope_angle > 45 && tabInputs.soil_moisture > 80 && tabInputs.rainfall_intensity > 80;
+        const isHigh = tabInputs.slope_angle > 30 && tabInputs.rainfall_intensity > 40;
+        const isMod = tabInputs.slope_angle > 20 || tabInputs.soil_moisture > 60;
+        severity = isCrit ? "Critical" : isHigh ? "High" : isMod ? "Moderate" : "Low";
+        riskVal = isCrit ? 91 : isHigh ? 68 : isMod ? 38 : 10;
+      }
 
       const mockRes: PredictionResult = {
         severity,

@@ -17,12 +17,11 @@ interface ThreatNode {
 }
 
 const threatNodes: ThreatNode[] = [
-  { id: "na-wildfire", name: "California Coast, USA", lat: 36.7783, lng: -119.4179, x: 20, y: 35, disasterType: "Wildfire", severity: "High", risk: 85, desc: "High atmospheric drought index. High dry winds." },
-  { id: "sa-landslide", name: "Amazon Slope Basin, Peru", lat: -9.19, lng: -75.0152, x: 30, y: 68, disasterType: "Landslide", severity: "Moderate", risk: 58, desc: "Soil water saturation level: 92% after prolonged precipitation." },
-  { id: "jp-earthquake", name: "Honshu Shore, Japan", lat: 36.2048, lng: 138.2529, x: 82, y: 35, disasterType: "Earthquake", severity: "Moderate", risk: 62, desc: "Plate boundary seismic stress anomaly. M6.1 recorded." },
-  { id: "in-flood", name: "Brahmaputra Basin, India", lat: 26.14, lng: 91.73, x: 70, y: 45, disasterType: "Flood", severity: "High", risk: 89, desc: "River level breached critical thresholds (12m overflow)." },
-  { id: "au-wildfire", name: "Western Australia", lat: -25.2744, lng: 133.7751, x: 80, y: 75, disasterType: "Wildfire", severity: "Critical", risk: 96, desc: "Heat wave conditions (44°C). Low relative humidity." },
-  { id: "ph-cyclone", name: "Bay of Bengal / Indian Ocean", lat: 14.5995, lng: 120.9842, x: 74, y: 55, disasterType: "Cyclone", severity: "Critical", risk: 94, desc: "Super cyclone 'Amphan II' forming. Sustained wind 210 km/h." },
+  { id: "in-himalaya-landslide", name: "Himalayan Landslide Belt (Uttarakhand)", lat: 30.0668, lng: 79.0193, x: 50, y: 22, disasterType: "Landslide", severity: "Moderate", risk: 62, desc: "Monsoon rains triggered slope saturation at 94% on Uttarakhand highway corridors. High debris flow warnings active." },
+  { id: "in-brahmaputra-flood", name: "Brahmaputra Basin (Assam)", lat: 26.14, lng: 91.73, x: 84, y: 38, disasterType: "Flood", severity: "High", risk: 89, desc: "River levels breached critical thresholds in Assam. Intense monsoonal downpours (420mm) expected over 48 hours." },
+  { id: "in-bayofbengal-cyclone", name: "Bay of Bengal (Odisha Coast)", lat: 20.2724, lng: 85.8338, x: 67, y: 55, disasterType: "Cyclone", severity: "Critical", risk: 94, desc: "Super Cyclone 'Amphan II' forming. Sustained wind speeds exceeding 210 km/h. Evacuation active for coastal lowlands." },
+  { id: "in-kachchh-earthquake", name: "Kachchh Seismic Fault (Bhuj, Gujarat)", lat: 23.2504, lng: 69.6693, x: 23, y: 48, disasterType: "Earthquake", severity: "Moderate", risk: 58, desc: "M 5.8 earthquake registered along the Kachchh rift zone. Pre-shocks detected, structural inspections advised." },
+  { id: "in-wghats-wildfire", name: "Western Ghats Forest Zone (Maharashtra)", lat: 18.5204, lng: 73.8567, x: 38, y: 64, disasterType: "Wildfire", severity: "High", risk: 82, desc: "Forest fires detected in Western Ghats deciduous slopes due to dry heatwave and 43°C temperatures." },
 ];
 
 interface InteractiveMapProps {
@@ -63,74 +62,50 @@ export default function InteractiveMap({ onSelectRegion }: InteractiveMapProps) 
         <div className="flex items-center space-x-2">
           <Activity className="h-4 w-4 text-neon-blue animate-pulse" />
           <span className="font-mono text-xs font-bold tracking-widest text-neon-blue uppercase">
-            Global Hazard Monitoring Grid
+            Indian Subcontinent Threat Matrix
           </span>
         </div>
         <div className="flex items-center space-x-4">
           <span className="flex items-center space-x-1 font-mono text-[10px] text-gray-400">
             <span className="h-2 w-2 rounded-full bg-neon-red animate-ping" />
-            <span className="text-neon-red font-bold">2 Critical Threats</span>
+            <span className="text-neon-red font-bold">1 Active Critical Hazard</span>
           </span>
         </div>
       </div>
 
-      {/* SVG Stylized Cyber World Map */}
+      {/* SVG Stylized Cyber India Map */}
       <div className="relative mt-4 flex items-center justify-center">
         <svg
-          viewBox="0 0 100 80"
-          className="w-full max-w-[900px] select-none opacity-80"
+          viewBox="0 0 100 100"
+          className="w-full max-w-[500px] select-none opacity-80"
           xmlns="http://www.w3.org/2000/svg"
         >
-          {/* Abstract Cyber Grid / Continents wireframe */}
-          {/* Stylized background lines */}
-          <path
-            d="M 5,40 Q 25,10 50,40 T 95,40"
-            fill="none"
-            stroke="rgba(0, 209, 255, 0.05)"
-            strokeWidth="0.5"
-          />
-          <path
-            d="M 5,20 Q 25,60 50,20 T 95,20"
-            fill="none"
-            stroke="rgba(123, 47, 247, 0.04)"
-            strokeWidth="0.5"
-          />
+          {/* Abstract Grid background */}
+          <line x1="10" y1="0" x2="10" y2="100" stroke="rgba(0, 209, 255, 0.02)" strokeWidth="0.2" />
+          <line x1="30" y1="0" x2="30" y2="100" stroke="rgba(0, 209, 255, 0.02)" strokeWidth="0.2" />
+          <line x1="50" y1="0" x2="50" y2="100" stroke="rgba(0, 209, 255, 0.02)" strokeWidth="0.2" />
+          <line x1="70" y1="0" x2="70" y2="100" stroke="rgba(0, 209, 255, 0.02)" strokeWidth="0.2" />
+          <line x1="90" y1="0" x2="90" y2="100" stroke="rgba(0, 209, 255, 0.02)" strokeWidth="0.2" />
+          
+          <line x1="0" y1="10" x2="100" y2="10" stroke="rgba(0, 209, 255, 0.02)" strokeWidth="0.2" />
+          <line x1="0" y1="30" x2="100" y2="30" stroke="rgba(0, 209, 255, 0.02)" strokeWidth="0.2" />
+          <line x1="0" y1="50" x2="100" y2="50" stroke="rgba(0, 209, 255, 0.02)" strokeWidth="0.2" />
+          <line x1="0" y1="70" x2="100" y2="70" stroke="rgba(0, 209, 255, 0.02)" strokeWidth="0.2" />
+          <line x1="0" y1="90" x2="100" y2="90" stroke="rgba(0, 209, 255, 0.02)" strokeWidth="0.2" />
 
-          {/* Simple Vector Silhouette of Continents */}
-          {/* North America */}
+          {/* Simple Vector Silhouette of India */}
           <path
-            d="M 12,22 L 24,20 L 26,28 L 22,35 L 20,38 L 15,35 L 10,28 Z"
-            fill="rgba(255, 255, 255, 0.02)"
-            stroke="rgba(0, 209, 255, 0.1)"
-            strokeWidth="0.5"
+            d="M 48,5 L 55,6 L 58,12 L 52,16 L 55,23 L 70,32 L 73,31 L 75,33 L 73,35 L 77,33 L 80,33 L 79,36 L 88,32 L 92,34 L 90,38 L 88,38 L 88,48 L 84,48 L 84,42 L 82,45 L 80,40 L 74,46 L 71,50 L 66,56 L 62,62 L 58,70 L 55,76 L 53,82 L 50,88 L 49,92 L 45,85 L 44,80 L 45,75 L 42,70 L 40,65 L 38,60 L 37,55 L 32,52 L 24,52 L 20,48 L 22,45 L 28,42 L 32,45 L 28,38 L 30,30 L 34,25 L 40,20 L 42,12 Z"
+            fill="rgba(0, 209, 255, 0.02)"
+            stroke="rgba(0, 209, 255, 0.15)"
+            strokeWidth="0.6"
           />
-          {/* South America */}
+          {/* Sri Lanka */}
           <path
-            d="M 22,45 L 28,48 L 32,55 L 29,72 L 26,75 L 24,62 L 20,52 Z"
-            fill="rgba(255, 255, 255, 0.02)"
-            stroke="rgba(0, 209, 255, 0.1)"
-            strokeWidth="0.5"
-          />
-          {/* Africa */}
-          <path
-            d="M 42,42 L 52,40 L 56,48 L 52,65 L 48,68 L 45,55 L 40,48 Z"
-            fill="rgba(255, 255, 255, 0.02)"
-            stroke="rgba(0, 209, 255, 0.1)"
-            strokeWidth="0.5"
-          />
-          {/* Eurasia */}
-          <path
-            d="M 40,20 L 55,18 L 78,16 L 86,22 L 88,38 L 74,45 L 68,36 L 58,40 L 44,30 Z"
-            fill="rgba(255, 255, 255, 0.02)"
-            stroke="rgba(0, 209, 255, 0.1)"
-            strokeWidth="0.5"
-          />
-          {/* Australia */}
-          <path
-            d="M 78,65 L 86,64 L 84,74 L 75,72 Z"
-            fill="rgba(255, 255, 255, 0.02)"
-            stroke="rgba(0, 209, 255, 0.1)"
-            strokeWidth="0.5"
+            d="M 54,92 L 57,93 L 56,96 L 53,95 Z"
+            fill="rgba(0, 209, 255, 0.02)"
+            stroke="rgba(0, 209, 255, 0.15)"
+            strokeWidth="0.6"
           />
 
           {/* Interactive Threat Nodes */}
@@ -151,10 +126,10 @@ export default function InteractiveMap({ onSelectRegion }: InteractiveMapProps) 
                   <circle
                     cx={node.x}
                     cy={node.y}
-                    r={isHovered ? 4 : 2.5}
+                    r={isHovered ? 6 : 4}
                     fill="none"
                     stroke={node.severity === "Critical" ? "#FF4D4D" : "#f97316"}
-                    strokeWidth="0.4"
+                    strokeWidth="0.5"
                     className="animate-ping"
                     style={{ transformOrigin: `${node.x}px ${node.y}px` }}
                   />
@@ -164,20 +139,20 @@ export default function InteractiveMap({ onSelectRegion }: InteractiveMapProps) 
                 <circle
                   cx={node.x}
                   cy={node.y}
-                  r={isSelected ? 1.8 : 1.2}
+                  r={isSelected ? 3 : 2}
                   className={`${getSeverityColor(node.severity)} transition-all duration-300`}
                 />
 
                 {/* Target box bracket on hover */}
                 {isHovered && (
                   <rect
-                    x={node.x - 3}
-                    y={node.y - 3}
-                    width={6}
-                    height={6}
+                    x={node.x - 5}
+                    y={node.y - 5}
+                    width={10}
+                    height={10}
                     fill="none"
                     stroke="#00D1FF"
-                    strokeWidth="0.25"
+                    strokeWidth="0.4"
                   />
                 )}
               </g>
@@ -193,7 +168,7 @@ export default function InteractiveMap({ onSelectRegion }: InteractiveMapProps) 
               return (
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <span className="font-mono text-[9px] text-gray-400">TARGET TARGET_LOCK</span>
+                    <span className="font-mono text-[9px] text-gray-400">STATION LOCK</span>
                     <span className={`rounded px-1.5 py-0.5 text-[8px] font-bold border ${getSeverityBg(node.severity)}`}>
                       {node.severity}
                     </span>
@@ -212,7 +187,7 @@ export default function InteractiveMap({ onSelectRegion }: InteractiveMapProps) 
                   </p>
                   <div className="flex justify-end pt-1">
                     <span className="font-mono text-[8px] text-neon-blue animate-pulse">
-                      CLICK TO SELECT STATION &gt;
+                      CLICK TO CONNECT TELEMETRY &gt;
                     </span>
                   </div>
                 </div>
@@ -224,7 +199,7 @@ export default function InteractiveMap({ onSelectRegion }: InteractiveMapProps) 
 
       {/* Footer Info bar */}
       <div className="mt-4 flex flex-wrap justify-between gap-2 font-mono text-[9px] text-gray-400">
-        <div>ORBITAL LAT: 24.628 // LONG: 121.054</div>
+        <div>SUB-REGIONAL METEOROLOGICAL COORDINATES</div>
         <div className="flex items-center space-x-3">
           <span className="flex items-center"><span className="mr-1 h-1.5 w-1.5 rounded-full bg-neon-red" /> CRITICAL</span>
           <span className="flex items-center"><span className="mr-1 h-1.5 w-1.5 rounded-full bg-orange-500" /> HIGH</span>

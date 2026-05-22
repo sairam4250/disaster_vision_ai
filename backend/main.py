@@ -107,30 +107,30 @@ def get_weather(region: str):
     seismic_activity = round(random.uniform(0.1, 4.0), 1)
     soil_moisture = round(random.uniform(20.0, 80.0), 1)
 
-    if "pacific" in reg_lower or "coast" in reg_lower or "california" in reg_lower:
-        temp = round(random.uniform(32.0, 44.0), 1)
+    if "wghats" in reg_lower or "ghats" in reg_lower or "wildfire" in reg_lower:
+        temp = round(random.uniform(38.0, 48.0), 1)
         humidity = round(random.uniform(5.0, 25.0), 1)
-        wind_speed = round(random.uniform(35.0, 75.0), 1)
+        wind_speed = round(random.uniform(30.0, 75.0), 1)
         drought_index = round(random.uniform(7.5, 9.8), 1)
         rainfall = 0.0
-    elif "ocean" in reg_lower or "bay" in reg_lower or "cyclone" in reg_lower or "typhoon" in reg_lower:
-        temp = round(random.uniform(26.0, 32.0), 1)
-        pressure = round(random.uniform(940.0, 980.0), 1)
-        wind_speed = round(random.uniform(120.0, 240.0), 1)
+    elif "bengal" in reg_lower or "odisha" in reg_lower or "cyclone" in reg_lower:
+        temp = round(random.uniform(26.0, 33.0), 1)
+        pressure = round(random.uniform(900.0, 975.0), 1)
+        wind_speed = round(random.uniform(130.0, 270.0), 1)
         humidity = round(random.uniform(85.0, 100.0), 1)
-        rainfall = round(random.uniform(120.0, 320.0), 1)
-    elif "basin" in reg_lower or "flood" in reg_lower or "monsoon" in reg_lower:
+        rainfall = round(random.uniform(120.0, 300.0), 1)
+    elif "brahmaputra" in reg_lower or "assam" in reg_lower or "flood" in reg_lower:
         temp = round(random.uniform(20.0, 28.0), 1)
         humidity = round(random.uniform(80.0, 100.0), 1)
-        rainfall = round(random.uniform(150.0, 450.0), 1)
+        rainfall = round(random.uniform(200.0, 550.0), 1)
         soil_moisture = round(random.uniform(90.0, 100.0), 1)
-    elif "japan" in reg_lower or "ring of fire" in reg_lower or "seismic" in reg_lower:
-        seismic_activity = round(random.uniform(4.5, 8.2), 1)
-        temp = round(random.uniform(10.0, 22.0), 1)
-    elif "highlands" in reg_lower or "mountain" in reg_lower or "slope" in reg_lower:
+    elif "kachchh" in reg_lower or "gujarat" in reg_lower or "earthquake" in reg_lower:
+        seismic_activity = round(random.uniform(5.0, 8.2), 1)
+        temp = round(random.uniform(25.0, 35.0), 1)
+    elif "himalaya" in reg_lower or "uttarakhand" in reg_lower or "landslide" in reg_lower or "slope" in reg_lower:
         soil_moisture = round(random.uniform(85.0, 100.0), 1)
-        rainfall = round(random.uniform(80.0, 200.0), 1)
-        temp = round(random.uniform(15.0, 25.0), 1)
+        rainfall = round(random.uniform(100.0, 250.0), 1)
+        temp = round(random.uniform(15.0, 28.0), 1)
         
     return {
         "region": region,
